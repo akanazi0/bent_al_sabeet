@@ -1,59 +1,176 @@
 import 'package:flutter/material.dart';
-import '../../data/player_model.dart';
+
+class Player {
+  final String name;
+  final List<int> scores = [];
+  bool isKing = false;
+  bool isDealer = false;
+
+  Player({required this.name});
+
+  int get totalScore => scores.fold(0, (a, b) => a + b);
+}
 
 class GameProvider extends ChangeNotifier {
-  GameSession? session;
+  List<Player>? players;
+  int? _selectedPlayerIndex;
+  // Store pending score components per player so we can validate special cards
+  // (بنت السبيت, عشرة الديمن, الهاص, الماينس) individually before finalizing.
+  final Map<int, Map<String, int>> _pendingScores = {};
+
+  int? get selectedPlayerIndex => _selectedPlayerIndex;
 
   void startNewGame(List<String> names, int limit) {
-    session = GameSession(
-      players: names.map((n) => Player(name: n)).toList(),
-      scoreLimit: limit,
-    );
+    players = names.map((name) => Player(name: name)).toList();
+    // Ensure no titles at the very start of a new game; titles will
+    // be assigned only after the first committed round via
+    // `finalizeRound()`. Initialize each player's scores with a single
+    // zero so totals show 0 by default.
+    _pendingScores.clear();
+    _selectedPlayerIndex = null;
+    for (var p in players!) {
+      p.isDealer = false;
+      p.isKing = false;
+      p.scores.clear();
+    }
     notifyListeners();
   }
 
-  void addRound(List<int> scores) {
-    if (session == null) return;
-    
-    for (int i = 0; i < session!.players.length; i++) {
-      session!.players[i].totalScore += scores[i];
-      session!.players[i].roundHistory.add(scores[i]);
-    }
-    session!.rounds.add(scores);
-    _updateTitles();
+  void selectPlayer(int index) {
+    _selectedPlayerIndex = index;
     notifyListeners();
+  }
+
+  void addScoreToSelectedPlayer(int score) {
+    // Deprecated: keep for compatibility but do nothing.
+    return;
+  }
+
+  /// Add pending score components for the currently selected player.
+  void addPendingScoreComponents({required int sibeeta, required int deman, required int hash, required int minus}) {
+    if (players == null || _selectedPlayerIndex == null) return;
+    _pendingScores[_selectedPlayerIndex!] = {
+      'sibeeta': sibeeta,
+      'deman': deman,
+      'hash': hash,
+      'minus': minus,
+    };
+    _selectedPlayerIndex = null;
+    notifyListeners();
+  }
+
+  /// Prefill pending scores with zeros for all players that don't have a pending value.
+  /// Useful when opening the player-selection UI so players that will score 0
+  /// can be quickly committed without extra taps.
+  void prefillPendingZeros() {
+    if (players == null) return;
+    for (int i = 0; i < players!.length; i++) {
+      if (!_pendingScores.containsKey(i)) {
+        _pendingScores[i] = {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
+      }
+    }
+    notifyListeners();
+  }
+
+  void finalizeRound() {
+    if (players == null) return;
+    // Commit pending scores to each player's score list. If a player has no
+    // pending score, commit a 0 for that round.
+    for (int i = 0; i < players!.length; i++) {
+      final components = _pendingScores.containsKey(i)
+          ? _pendingScores[i]!
+          : {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
+      final val = (components['sibeeta'] ?? 0) + (components['deman'] ?? 0) + (components['hash'] ?? 0) + (components['minus'] ?? 0);
+      players![i].scores.add(val);
+    }
+
+    // Clear pending scores after committing.
+    _pendingScores.clear();
+
+    // Update king: keep the previous king if it's tied for the minimum;
+    // otherwise assign the title to the earliest player in the tie.
+    int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
+    final tiedKingIndices = <int>[];
+    for (int i = 0; i < players!.length; i++) {
+      if (players![i].totalScore == minScore) tiedKingIndices.add(i);
+    }
+    int prevKingIndex = players!.indexWhere((p) => p.isKing);
+    // clear all kings first
+    for (var p in players!) p.isKing = false;
+    if (tiedKingIndices.isNotEmpty) {
+      if (prevKingIndex != -1 && tiedKingIndices.contains(prevKingIndex)) {
+        players![prevKingIndex].isKing = true;
+      } else {
+        players![tiedKingIndices.first].isKing = true;
+      }
+    }
+
+    // Update dealer (الموزع): keep previous dealer if tied for the maximum;
+    // otherwise assign to the earliest player in the tie.
+    int maxScore = players!.map((p) => p.totalScore).reduce((a, b) => a > b ? a : b);
+    final tiedDealerIndices = <int>[];
+    for (int i = 0; i < players!.length; i++) {
+      if (players![i].totalScore == maxScore) tiedDealerIndices.add(i);
+    }
+    int prevDealerIndex = players!.indexWhere((p) => p.isDealer);
+    // clear all dealers first
+    for (var p in players!) p.isDealer = false;
+    if (tiedDealerIndices.isNotEmpty) {
+      if (prevDealerIndex != -1 && tiedDealerIndices.contains(prevDealerIndex)) {
+        players![prevDealerIndex].isDealer = true;
+      } else {
+        players![tiedDealerIndices.first].isDealer = true;
+      }
+    }
+
+    notifyListeners();
+  }
+
+  int get currentRoundProgress {
+    if (players == null || players!.isEmpty) return 0;
+    // Use pending (uncommitted) scores to determine progress for the
+    // currently being-entered round.
+    return _pendingScores.length;
+  }
+
+  /// Returns the pending total (sum of components) for a player, or null.
+  int? pendingScoreForPlayer(int index) {
+    final c = _pendingScores[index];
+    if (c == null) return null;
+    return (c['sibeeta'] ?? 0) + (c['deman'] ?? 0) + (c['hash'] ?? 0) + (c['minus'] ?? 0);
+  }
+
+  /// Returns the raw pending components map for a player, or null.
+  Map<String, int>? pendingComponentsForPlayer(int index) => _pendingScores[index];
+
+  List<Map<String, int>> get roundHistory {
+    if (players == null || players!.isEmpty) return [];
+    int minLength = players!.map((p) => p.scores.length).reduce((a, b) => a < b ? a : b);
+    
+    List<Map<String, int>> history = [];
+    for (int i = 0; i < minLength; i++) {
+      Map<String, int> roundData = {};
+      for (var p in players!) {
+        roundData[p.name] = p.scores[i];
+      }
+      history.add(roundData);
+    }
+    return history;
   }
 
   void undoLastRound() {
-    if (session == null || session!.rounds.isEmpty) return;
-    
-    List<int> lastRound = session!.rounds.removeLast();
-    for (int i = 0; i < session!.players.length; i++) {
-      session!.players[i].totalScore -= lastRound[i];
-      session!.players[i].roundHistory.removeLast();
+    if (players == null) return;
+    for (var p in players!) {
+      if (p.scores.isNotEmpty) p.scores.removeLast();
     }
-    _updateTitles();
-    notifyListeners();
-  }
-
-  void _updateTitles() {
-    if (session == null) return;
-    
-    int min = session!.players.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
-    int max = session!.players.map((p) => p.totalScore).reduce((a, b) => a > b ? a : b);
-
-    for (var p in session!.players) {
-      p.isKing = (p.totalScore == min && min != 0);
-    }
-
-    bool dealerSet = false;
-    for (var p in session!.players) {
-      if (p.totalScore == max && max != 0 && !dealerSet) {
-        p.isDealer = true;
-        dealerSet = true;
-      } else {
+    // If we've undone back to zero committed rounds, remove any titles.
+    final hasAnyRounds = players!.any((p) => p.scores.isNotEmpty);
+    if (!hasAnyRounds) {
+      for (var p in players!) {
+        p.isKing = false;
         p.isDealer = false;
       }
     }
+    notifyListeners();
   }
 }
