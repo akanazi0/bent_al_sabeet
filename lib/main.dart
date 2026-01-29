@@ -9,10 +9,15 @@ import 'package:bent_al_sabeet/features/scoring/presentation/screens/main_menu_s
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF1E1F22),
+    systemNavigationBarColor: Color(0xFF131416),
     systemNavigationBarIconBrightness: Brightness.light,
   ));
 
@@ -20,9 +25,11 @@ void main() {
 
   runApp(
     DevicePreview(
-      enabled: false, 
-      builder: (context) => ChangeNotifierProvider(
-        create: (context) => GameProvider(),
+      enabled: true, 
+      builder: (context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => GameProvider()),
+        ],
         child: const MyApp(),
       ),
     ),
@@ -36,38 +43,49 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       title: 'حاسبة بنت السبيت',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF1E1F22),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF3574F0),
-          surface: Color(0xFF2B2B2B),
-          onSurface: Colors.white,
-        ),
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        }),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1E1F22),
-          elevation: 0,
-          centerTitle: true,
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF3574F0),
-            foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
+      theme: _buildDarkTheme(),
+      home: const MainMenuScreen(),
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      fontFamily: 'Rubik',
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: Color(0xFFA9B7C6)),
+        bodyMedium: TextStyle(color: Color(0xFFA9B7C6)),
+      ),
+      splashFactory: NoSplash.splashFactory,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: const Color(0xFF131416),
+      colorScheme: const ColorScheme.dark(
+        primary: Color(0xFF3574F0),
+        surface: Color(0xFF2B2B2B),
+        onSurface: Colors.white,
+      ),
+      dividerColor: const Color(0xFF3E3E3E),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      }),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF131416),
+        foregroundColor: Color(0xFFA9B7C6),
+        elevation: 0,
+        centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF3574F0),
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
-      home: const MainMenuScreen(),
     );
   }
 }

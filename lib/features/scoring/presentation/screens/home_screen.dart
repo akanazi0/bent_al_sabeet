@@ -17,13 +17,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1F22),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E1F22),
         elevation: 0,
-        title: const Text(
+        leading: IconButton(
+          tooltip: '',
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
           'إعداد الجلسة',
-          style: TextStyle(color: Color(0xFFA9B7C6), fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
@@ -32,29 +39,41 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'عدد اللاعبين',
-                style: TextStyle(color: Color(0xFF626569), fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [4, 5].map((count) => Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: ChoiceChip(
+                    showCheckmark: false,
                     label: Text('$count'),
                     selected: playerCount == count,
-                    selectedColor: const Color(0xFF3574F0),
-                    backgroundColor: const Color(0xFF2B2B2B),
-                    labelStyle: TextStyle(color: playerCount == count ? Colors.white : const Color(0xFFA9B7C6)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    labelStyle: TextStyle(
+                      color: playerCount == count ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     onSelected: (val) => setState(() => playerCount = count),
                   ),
                 )).toList(),
               ),
               const SizedBox(height: 32),
-              const Text(
+              Text(
                 'أسماء اللاعبين',
-                style: TextStyle(color: Color(0xFF626569), fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 12),
               Expanded(
@@ -64,17 +83,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: TextField(
                       controller: controllers[i],
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                       decoration: InputDecoration(
                         labelText: 'اسم اللاعب ${i + 1}',
-                        labelStyle: const TextStyle(color: Color(0xFF626569)),
+                        labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6)),
                         filled: true,
-                        fillColor: const Color(0xFF2B2B2B),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF3E3E3E)),
+                        fillColor: Theme.of(context).colorScheme.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
                         ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF3574F0)),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ),
@@ -89,26 +114,54 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3574F0),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     elevation: 0,
                   ),
                   onPressed: () {
+                    final emptyNames = controllers
+                        .take(playerCount)
+                        .where((c) => c.text.trim().isEmpty)
+                        .isNotEmpty;
+
+                    if (emptyNames) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          title: const Text('تنبيه', textAlign: TextAlign.right, 
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                          content: const Text('يجب اضافه جميع اسماء اللاعبين', textAlign: TextAlign.right),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('حسنا', style: TextStyle(color: Color(0xFF3574F0), fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+
                     final names = controllers
                         .take(playerCount)
-                        .map((c) => c.text.isEmpty ? 'لاعب ${controllers.indexOf(c) + 1}' : c.text)
+                        .map((c) => c.text.trim())
                         .toList();
                     context.read<GameProvider>().startNewGame(names, 151);
                     
                     Navigator.pushReplacement(
                       context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, anim, secAnim) => const DashboardScreen(),
-                        transitionDuration: const Duration(milliseconds: 200),
-                        transitionsBuilder: (context, anim, secAnim, child) => FadeTransition(opacity: anim, child: child),
-                      ),
+                      MaterialPageRoute(builder: (context) => const DashboardScreen()),
                     );
                   },
-                  child: const Text('بدء الجلسة', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: const Text(
+                    'بدء الجلسة',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
                 ),
               ),
             ],

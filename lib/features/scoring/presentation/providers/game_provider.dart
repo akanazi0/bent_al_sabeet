@@ -41,10 +41,6 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addScoreToSelectedPlayer(int score) {
-    // Deprecated: keep for compatibility but do nothing.
-    return;
-  }
 
   /// Add pending score components for the currently selected player.
   void addPendingScoreComponents({required int sibeeta, required int deman, required int hash, required int minus}) {
@@ -87,22 +83,10 @@ class GameProvider extends ChangeNotifier {
     // Clear pending scores after committing.
     _pendingScores.clear();
 
-    // Update king: keep the previous king if it's tied for the minimum;
-    // otherwise assign the title to the earliest player in the tie.
+    // Update king: mark ALL players tied for the minimum score.
     int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
-    final tiedKingIndices = <int>[];
-    for (int i = 0; i < players!.length; i++) {
-      if (players![i].totalScore == minScore) tiedKingIndices.add(i);
-    }
-    int prevKingIndex = players!.indexWhere((p) => p.isKing);
-    // clear all kings first
-    for (var p in players!) p.isKing = false;
-    if (tiedKingIndices.isNotEmpty) {
-      if (prevKingIndex != -1 && tiedKingIndices.contains(prevKingIndex)) {
-        players![prevKingIndex].isKing = true;
-      } else {
-        players![tiedKingIndices.first].isKing = true;
-      }
+    for (var p in players!) {
+      p.isKing = p.totalScore == minScore;
     }
 
     // Update dealer (الموزع): keep previous dealer if tied for the maximum;
@@ -143,20 +127,6 @@ class GameProvider extends ChangeNotifier {
   /// Returns the raw pending components map for a player, or null.
   Map<String, int>? pendingComponentsForPlayer(int index) => _pendingScores[index];
 
-  List<Map<String, int>> get roundHistory {
-    if (players == null || players!.isEmpty) return [];
-    int minLength = players!.map((p) => p.scores.length).reduce((a, b) => a < b ? a : b);
-    
-    List<Map<String, int>> history = [];
-    for (int i = 0; i < minLength; i++) {
-      Map<String, int> roundData = {};
-      for (var p in players!) {
-        roundData[p.name] = p.scores[i];
-      }
-      history.add(roundData);
-    }
-    return history;
-  }
 
   void undoLastRound() {
     if (players == null) return;
@@ -169,6 +139,12 @@ class GameProvider extends ChangeNotifier {
       for (var p in players!) {
         p.isKing = false;
         p.isDealer = false;
+      }
+    } else {
+      // Recalculate kings based on common minimum
+      int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
+      for (var p in players!) {
+        p.isKing = p.totalScore == minScore;
       }
     }
     notifyListeners();

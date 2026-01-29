@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,12 +28,34 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>bent_al_sabeet</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Preload Rubik fonts to prevent flickering (tofu) on load -->
+  <link rel="preload" href="assets/fonts/Rubik-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/fonts/Rubik-Bold.ttf" as="font" type="font/ttf" crossorigin>
+
+  <style>
+    @font-face {
+      font-family: 'Rubik';
+      src: url('assets/fonts/Rubik-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Rubik';
+      src: url('assets/fonts/Rubik-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+  </style>
 </head>
+
 <body>
   <script src="flutter_bootstrap.js" async></script>
 </body>
+
 </html>

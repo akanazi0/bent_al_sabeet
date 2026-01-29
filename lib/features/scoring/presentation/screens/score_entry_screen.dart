@@ -18,118 +18,169 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1F22),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E1F22),
         elevation: 0,
-        title: const Text('تسجيل النقاط', 
-          style: TextStyle(color: Color(0xFFA9B7C6), fontSize: 16, fontWeight: FontWeight.bold)),
+        leading: IconButton(
+          tooltip: '',
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'تسجيل النقاط',
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height * 0.5),
-                child: IntrinsicHeight(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                          _buildOption('♠', 'بنت السبيت', [0, 13, 26], (val) => setState(() => sibeeta = val), sibeeta),
-                      const SizedBox(height: 24),
-                      _buildOption('♦', 'عشرة الديمن', [0, 10, 20], (val) => setState(() => deman = val), deman),
-                      const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2B2B2B),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: const Color(0xFF3E3E3E)),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                              leading: const Text('♥', style: TextStyle(color: Color(0xFF3574F0), fontSize: 26)),
-                          title: const Text('الهاص (نقاط يدوية)', style: TextStyle(color: Color(0xFFA9B7C6), fontSize: 14, fontWeight: FontWeight.bold)),
-                          trailing: SizedBox(
-                            width: 80,
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: const InputDecoration(
-                                hintText: '0',
-                                hintStyle: TextStyle(color: Color(0xFF626569)),
-                                border: InputBorder.none,
-                              ),
-                              onChanged: (val) => setState(() => hash = int.tryParse(val) ?? 0),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      _buildOption('-', 'الماينس', [0, -10, -20], (val) => setState(() => minus = val), minus),
-                    ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildIncrementOption('♠', 'بنت السبيت', sibeeta, 13, 0, 26, (val) => setState(() => sibeeta = val)),
+                    _buildIncrementOption('♦', 'عشرة الديمن', deman, 10, 0, 20, (val) => setState(() => deman = val)),
+                    _buildIncrementOption('♥', 'الهاص', hash, 1, 0, 26, (val) => setState(() => hash = val)),
+                    _buildIncrementOption('-', 'الماينس', minus, 10, -20, 0, (val) => setState(() => minus = val)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3574F0),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    context.read<GameProvider>().addPendingScoreComponents(
+                          sibeeta: sibeeta, deman: deman, hash: hash, minus: minus);
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'تـم',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIncrementOption(String icon, String title, int currentVal, int step, int minVal, int maxVal, Function(int) onUpdate) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+      ),
+      child: Row(
+        children: [
+          // Icon and title
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Text(
+                  icon,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3574F0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                ),
-                onPressed: () {
-                  context.read<GameProvider>().addPendingScoreComponents(
-                        sibeeta: sibeeta, deman: deman, hash: hash, minus: minus);
-                  Navigator.pop(context);
-                },
-                child: const Text('تـم', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          // Controls
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Minus button
+              _buildControlButton(
+                icon: Icons.remove,
+                isEnabled: currentVal > minVal,
+                onPressed: () => onUpdate(currentVal - step),
               ),
-            ),
-          )
+              // Current value display
+              Container(
+                width: 60,
+                alignment: Alignment.center,
+                child: Text(
+                  '$currentVal',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              // Plus button
+              _buildControlButton(
+                icon: Icons.add,
+                isEnabled: currentVal < maxVal,
+                onPressed: () => onUpdate(currentVal + step),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildOption(String icon, String title, List<int> values, Function(int) onSelect, int currentVal) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2B2B2B),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: const Color(0xFF3E3E3E)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-                Text(icon, style: const TextStyle(color: Color(0xFF3574F0), fontSize: 26)),
-                const SizedBox(width: 10),
-              Text(title, style: const TextStyle(color: Color(0xFFA9B7C6), fontSize: 14, fontWeight: FontWeight.bold)),
-            ],
+  Widget _buildControlButton({
+    required IconData icon,
+    required bool isEnabled,
+    required VoidCallback onPressed,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isEnabled ? onPressed : null,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: isEnabled ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+            borderRadius: BorderRadius.circular(20),
           ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: values.map((v) => ChoiceChip(
-              label: Text('$v'),
-              selected: currentVal == v,
-              selectedColor: const Color(0xFF3574F0),
-              backgroundColor: const Color(0xFF1E1F22),
-              labelStyle: TextStyle(color: currentVal == v ? Colors.white : const Color(0xFFA9B7C6)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              onSelected: (selected) => onSelect(v),
-            )).toList(),
+          child: Icon(
+            icon,
+            color: isEnabled ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+            size: 20,
           ),
-        ],
+        ),
       ),
     );
   }

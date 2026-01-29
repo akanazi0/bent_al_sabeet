@@ -17,22 +17,22 @@ class PlayerSelectionScreen extends StatelessWidget {
     int currentRoundNumber = minScores + 1;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1F22),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E1F22),
         elevation: 0,
         automaticallyImplyLeading: false, // حذف زر الرجوع العلوي
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFFA9B7C6)),
+          tooltip: '',
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).appBarTheme.foregroundColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         centerTitle: true,
-        title: Text('التسجيل رقم $currentRoundNumber', 
-          style: const TextStyle(color: Color(0xFFA9B7C6), fontSize: 16, fontWeight: FontWeight.bold)),
+        title: Text('التسجيلة رقم $currentRoundNumber', 
+          style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor, fontSize: 16, fontWeight: FontWeight.bold)),
       ),
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: [
           Expanded(
             child: GridView.builder(
@@ -83,9 +83,10 @@ class PlayerSelectionScreen extends StatelessWidget {
               },
             ),
           ),
+          const SizedBox(height: 16),
           // الزر الأزرق المطلوب في الأسفل - يظهر دائماً، مفعل فقط عند إكمال الجولة
           Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             child: SizedBox(
               width: double.infinity,
               height: 54,
@@ -119,37 +120,37 @@ class PlayerSelectionScreen extends StatelessWidget {
                           }
                         }
                         if (allZero) {
-                          errors.add('لا يمكن تسجيل جولة بجميع اللاعبين بصفر\nيرجى إدخال نقاط لكل لاعب');
-                        }
+                          errors.add('لا يمكن تسجيل جولة صفرية\nيرجى إدخال نقاط لكل لاعب');
+                        } else {
+                          // Require exactly one queen and exactly one 10-diamond.
+                          if (sibeetaCount != 1) {
+                            errors.add('يجب ان يمتلك لاعب واحد بطاقة بنت السبيت\nيرجى التحقق من هو صاحب البطاقة');
+                          }
+                          if (demanCount != 1) {
+                            errors.add('يجب ان يمتلك لاعب واحد بطاقة عشرة الديمن\nيرجى التحقق من هو صاحب البطاقة');
+                          }
 
-                        // Require exactly one queen and exactly one 10-diamond.
-                        if (sibeetaCount != 1) {
-                          errors.add('يجب ان يمتلك لاعب واحد بطاقة بنت السبيت\nيرجى التحقق من هو صاحب البطاقة');
-                        }
-                        if (demanCount != 1) {
-                          errors.add('يجب ان يمتلك لاعب واحد بطاقة عشرة الديمن\nيرجى التحقق من هو صاحب البطاقة');
-                        }
-
-                        // Hearts total must be exactly 13 or 26 across all players.
-                        if (!(totalHash == 13 || totalHash == 26)) {
-                          errors.add('مجموع نقاط الهاص يجب ان تكون 13 او 26 نقطة\nالمجموع الحالي: $totalHash');
+                          // Hearts total must be exactly 13 or 26 across all players.
+                          if (!(totalHash == 13 || totalHash == 26)) {
+                            errors.add('مجموع نقاط الهاص يجب ان يكون 13 او 26 نقطةفقط\nالمجموع الحالي: $totalHash');
+                          }
                         }
 
                         if (errors.isNotEmpty) {
                           showDialog(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              backgroundColor: const Color(0xFF1E1F22),
+                              backgroundColor: Theme.of(context).colorScheme.surface,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               content: Text(
                                 errors.join('\n\n'),
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(color: Color(0xFFA9B7C6), fontSize: 16),
+                                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.of(ctx).pop(),
-                                  child: const Text('حسناً', style: TextStyle(color: Color(0xFF3574F0))),
+                                  child: Text('حسنا', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
                                 )
                               ],
                             ),
@@ -167,6 +168,7 @@ class PlayerSelectionScreen extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

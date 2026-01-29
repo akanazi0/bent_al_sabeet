@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import 'player_selection_screen.dart';
-import 'round_details_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,16 +18,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF2B2B2B),
-            title: const Text('إنهاء اللعبة؟',
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text('إنهاء اللعبة؟',
                 textAlign: TextAlign.right,
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-            content: const Text('هل أنت متأكد من إنهاء اللعبة؟',
-                textAlign: TextAlign.right, style: TextStyle(color: Color(0xFFA9B7C6))),
+                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16, fontWeight: FontWeight.bold)),
+            content: Text('هل أنت متأكد من إنهاء اللعبة؟',
+                textAlign: TextAlign.right, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('لا', style: TextStyle(color: Color(0xFF3574F0))),
+                child: Text('لا', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -83,20 +82,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
-        backgroundColor: const Color(0xFF1E1F22),
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1E1F22),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFFA9B7C6)),
+            tooltip: '',
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).appBarTheme.foregroundColor),
             onPressed: () async {
               if (await _onWillPop(context)) {
                 Navigator.of(context).pop();
               }
             },
           ),
-          title: const Text('بنت السبيت',
-              style: TextStyle(color: Color(0xFFA9B7C6), fontSize: 20, fontWeight: FontWeight.bold)),
+          title: Text('بنت السبيت',
+              style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor, fontSize: 20, fontWeight: FontWeight.bold)),
         ),
         body: Column(
           children: [
@@ -119,10 +117,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           width: cellWidth,
                           margin: EdgeInsets.only(right: i == playerCount - 1 ? 0 : spacing, left: 0, top: 5, bottom: 5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2B2B2B),
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                              color: p.isKing ? const Color(0xFF3574F0) : const Color(0xFF3E3E3E),
+                              color: p.isKing ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
                               width: p.isKing ? 2 : 1,
                             ),
                           ),
@@ -132,11 +130,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(p.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(color: Color(0xFFA9B7C6), fontSize: 16)),
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16)),
                               const SizedBox(height: 4),
                               Text('${p.totalScore}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                              if (p.isKing) const Text('👑 الكنق', style: TextStyle(color: Color(0xFF3574F0), fontSize: 16)),
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 18, fontWeight: FontWeight.bold)),
+
                               if (p.isDealer) const Text('الموزع', style: TextStyle(color: Colors.redAccent, fontSize: 16)),
                               const SizedBox(height: 8),
                             ],
@@ -188,25 +186,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               margin: EdgeInsets.only(right: pIndex == playerCount - 1 ? 0 : 8, bottom: 8),
                               height: cellHeight,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1E1F22),
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
-                                  color: isLatestRound ? const Color(0xFF3574F0) : const Color(0xFF3E3E3E),
+                                  color: isLatestRound ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
                                   width: isLatestRound ? 2 : 1,
                                 ),
                                 boxShadow: isLatestRound
                                     ? [
                                         BoxShadow(
-                                          color: const Color(0xFF3574F0).withOpacity(0.12),
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
                                           blurRadius: 8,
                                           spreadRadius: 1,
                                         )
                                       ]
                                     : null,
                               ),
-                              child: Center(
-                                child: Text(text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                              ),
+                                child: Center(
+                                  child: Text(text, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontWeight: FontWeight.bold)),
+                                ),
                             );
                           }),
                         );
@@ -225,7 +223,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3574F0),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                         ),
                         onPressed: () {
@@ -246,7 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     height: 50,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF3E3E3E)),
+                        side: BorderSide(color: Theme.of(context).dividerColor),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                       ),
                       onPressed: () async {
@@ -259,7 +257,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               margin: const EdgeInsets.symmetric(horizontal: 24),
                               padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF2B2B2B),
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Column(
@@ -279,7 +277,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     children: [
                                       TextButton(
                                         onPressed: () => Navigator.of(c).pop(false),
-                                        child: const Text('لا', style: TextStyle(color: Color(0xFF3574F0), fontSize: 14)),
+                                        child: Text('لا', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14)),
                                       ),
                                       const SizedBox(width: 12),
                                       TextButton(
@@ -297,7 +295,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           game.undoLastRound();
                         }
                       },
-                      child: const Icon(Icons.undo, color: Color(0xFFA9B7C6), size: 20),
+                      child: Icon(Icons.undo, color: Theme.of(context).textTheme.bodyLarge?.color, size: 20),
                     ),
                   ),
                 ],
