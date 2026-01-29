@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:provider/provider.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/providers/game_provider.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/screens/main_menu_screen.dart';
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -24,14 +22,11 @@ void main() {
   timeDilation = 0.75;
 
   runApp(
-    DevicePreview(
-      enabled: true, 
-      builder: (context) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => GameProvider()),
-        ],
-        child: const MyApp(),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => GameProvider()),
+      ],
+      child: const MyApp(),
     ),
   );
 }
@@ -43,8 +38,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
       title: 'حاسبة بنت السبيت',
       theme: _buildDarkTheme(),
       home: const MainMenuScreen(),
