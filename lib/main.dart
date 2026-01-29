@@ -52,24 +52,34 @@ class MyApp extends StatelessWidget {
   }
 
   ThemeData _buildDarkTheme() {
-    return ThemeData(
-      fontFamily: 'Rubik',
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Color(0xFFA9B7C6)),
-        bodyMedium: TextStyle(color: Color(0xFFA9B7C6)),
-      ),
-      splashFactory: NoSplash.splashFactory,
+    final baseTheme = ThemeData(
       brightness: Brightness.dark,
+      fontFamily: 'Rubik',
+    );
+
+    return baseTheme.copyWith(
+      useMaterial3: true,
       scaffoldBackgroundColor: const Color(0xFF131416),
-      colorScheme: const ColorScheme.dark(
-        primary: Color(0xFF3574F0),
-        surface: Color(0xFF2B2B2B),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF3574F0),
+        brightness: Brightness.dark,
+        surface: const Color(0xFF2B2B2B),
         onSurface: Colors.white,
       ),
+      // Apply the font to the entire TextTheme explicitly
+      textTheme: baseTheme.textTheme.apply(
+        fontFamily: 'Rubik',
+        bodyColor: const Color(0xFFA9B7C6),
+        displayColor: Colors.white,
+      ),
+      splashFactory: NoSplash.splashFactory,
       dividerColor: const Color(0xFF3E3E3E),
       pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+        TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+        TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
+        TargetPlatform.windows: ZoomPageTransitionsBuilder(),
       }),
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF131416),
@@ -84,6 +94,10 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(
+            fontFamily: 'Rubik',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
