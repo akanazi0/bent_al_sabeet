@@ -12,7 +12,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int playerCount = 4;
+  int pointsLimit = 152; // Default points limit
   final List<TextEditingController> controllers = List.generate(5, (_) => TextEditingController());
+  final List<FocusNode> focusNodes = List.generate(5, (_) => FocusNode());
+
+  @override
+  void dispose() {
+    for (var controller in controllers) {
+      controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(
           'إعداد الجلسة',
-          style: TextStyle(
-            color: Theme.of(context).appBarTheme.foregroundColor,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
       body: SafeArea(
@@ -39,39 +48,130 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'عدد اللاعبين',
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
+              // Aligned Row for Player Count and Points Limit
               Row(
-                children: [4, 5].map((count) => Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ChoiceChip(
-                    showCheckmark: false,
-                    label: Text('$count'),
-                    selected: playerCount == count,
-                    selectedColor: Theme.of(context).colorScheme.primary,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    labelStyle: TextStyle(
-                      color: playerCount == count ? Colors.white : Theme.of(context).textTheme.bodyLarge?.color,
-                      fontWeight: FontWeight.w500,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Player count selection
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'عدد اللاعبين',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8.0,
+                          children: [4, 5].map((count) => ChoiceChip(
+                            showCheckmark: false, // Removed checkmark
+                            label: Text('$count', style: const TextStyle(fontSize: 16)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            selected: playerCount == count,
+                            onSelected: (selected) {
+                              if (selected) {
+                                setState(() {
+                                  playerCount = count;
+                                });
+                              }
+                            },
+                            selectedColor: Theme.of(context).colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(
+                                color: playerCount == count 
+                                    ? Theme.of(context).colorScheme.primary 
+                                    : Theme.of(context).dividerColor,
+                              ),
+                            ),
+                            labelStyle: TextStyle(
+                              color: playerCount == count
+                                  ? Colors.white
+                                  : Theme.of(context).textTheme.bodyMedium?.color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )).toList(),
+                        ),
+                      ],
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    onSelected: (val) => setState(() => playerCount = count),
                   ),
-                )).toList(),
+                  const SizedBox(width: 24),
+                  // Points limit input
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'نقاط اللعبة',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: 80, 
+                          height: 48, // Fixed height to match chips approximately
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              hintText: '152',
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Centered vertically
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8), // Matching radius
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            style: const TextStyle(
+                              fontSize: 16, // Matching font size
+                              fontWeight: FontWeight.w600,
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                if (value.isEmpty) {
+                                  pointsLimit = 152; 
+                                } else {
+                                  final limit = int.tryParse(value);
+                                  if (limit != null && limit > 0) {
+                                    pointsLimit = limit;
+                                  }
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Text(
                 'أسماء اللاعبين',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -80,26 +180,52 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView.builder(
                   itemCount: playerCount,
                   itemBuilder: (context, i) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
+                    padding: const EdgeInsets.only(bottom: 16.0),
                     child: TextField(
                       controller: controllers[i],
-                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                      focusNode: focusNodes[i],
+                      textInputAction: i < playerCount - 1 ? TextInputAction.next : TextInputAction.done,
+                      onSubmitted: (_) {
+                        // Move to next field or unfocus
+                        if (i < playerCount - 1) {
+                          focusNodes[i + 1].requestFocus();
+                        } else {
+                          focusNodes[i].unfocus();
+                        }
+                      },
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
                       decoration: InputDecoration(
                         labelText: 'اسم اللاعب ${i + 1}',
-                        labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6)),
+                        hintText: 'اللاعب ${i + 1}',
+                        hintStyle: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
+                        ),
+                        labelStyle: Theme.of(context).inputDecorationTheme.labelStyle?.copyWith(
+                          fontSize: 14,
+                        ),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                            width: 1.5,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -120,47 +246,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     elevation: 0,
                   ),
                   onPressed: () {
-                    final emptyNames = controllers
-                        .take(playerCount)
-                        .where((c) => c.text.trim().isEmpty)
-                        .isNotEmpty;
-
-                    if (emptyNames) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          backgroundColor: Theme.of(context).colorScheme.surface,
-                          title: const Text('تنبيه', textAlign: TextAlign.right, 
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                          content: const Text('يجب اضافه جميع اسماء اللاعبين', textAlign: TextAlign.right),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('حسنا', style: TextStyle(color: Color(0xFF3574F0), fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                      );
-                      return;
-                    }
+                    // Get names and auto-fill empty ones with defaults
 
                     final names = controllers
                         .take(playerCount)
                         .map((c) => c.text.trim())
                         .toList();
-                    context.read<GameProvider>().startNewGame(names, 151);
+                    
+                    // Auto-fill empty names
+                    for (int i = 0; i < names.length; i++) {
+                      if (names[i].isEmpty) {
+                        names[i] = 'اللاعب ${i + 1}';
+                      }
+                    }
+                    context.read<GameProvider>().startNewGame(names, pointsLimit);
                     
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => const DashboardScreen()),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     'بدء الجلسة',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
               ),

@@ -23,11 +23,7 @@ class MainMenuScreen extends StatelessWidget {
                 // Title
                 Text(
                   'بنت السبيت',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
                 const SizedBox(height: 40),
                 // New Game Button
@@ -49,12 +45,9 @@ class MainMenuScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => const HomeScreen()),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'لعبة جديدة',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                      ),
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ),
                 ),

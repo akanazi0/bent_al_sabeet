@@ -14,6 +14,7 @@ class Player {
 class GameProvider extends ChangeNotifier {
   List<Player>? players;
   int? _selectedPlayerIndex;
+  int pointsLimit = 152; // Default limit
   // Store pending score components per player so we can validate special cards
   // (بنت السبيت, عشرة الديمن, الهاص, الماينس) individually before finalizing.
   final Map<int, Map<String, int>> _pendingScores = {};
@@ -21,6 +22,7 @@ class GameProvider extends ChangeNotifier {
   int? get selectedPlayerIndex => _selectedPlayerIndex;
 
   void startNewGame(List<String> names, int limit) {
+    pointsLimit = limit;
     players = names.map((name) => Player(name: name)).toList();
     // Ensure no titles at the very start of a new game; titles will
     // be assigned only after the first committed round via
@@ -148,5 +150,25 @@ class GameProvider extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  Map<String, List<Player>>? checkForGameOver() {
+    if (players == null || players!.isEmpty) return null;
+    
+    // Check if any player has reached or exceeded the points limit
+    bool limitReached = players!.any((p) => p.totalScore >= pointsLimit);
+    
+    if (limitReached) {
+      // Find min and max scores
+      int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
+      int maxScore = players!.map((p) => p.totalScore).reduce((a, b) => a > b ? a : b);
+      
+      List<Player> winners = players!.where((p) => p.totalScore == minScore).toList();
+      List<Player> losers = players!.where((p) => p.totalScore == maxScore).toList();
+      
+      return {'winners': winners, 'losers': losers};
+    }
+    
+    return null;
   }
 }

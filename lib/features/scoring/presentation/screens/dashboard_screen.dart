@@ -21,9 +21,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             backgroundColor: Theme.of(context).colorScheme.surface,
             title: Text('إنهاء اللعبة؟',
                 textAlign: TextAlign.right,
-                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16, fontWeight: FontWeight.bold)),
+                style: Theme.of(context).dialogTheme.titleTextStyle),
             content: Text('هل أنت متأكد من إنهاء اللعبة؟',
-                textAlign: TextAlign.right, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
+                textAlign: TextAlign.right, 
+                style: Theme.of(context).dialogTheme.contentTextStyle),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -94,7 +95,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           title: Text('بنت السبيت',
-              style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor, fontSize: 20, fontWeight: FontWeight.bold)),
+              style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )),
         ),
         body: Column(
           children: [
@@ -233,7 +237,92 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => const PlayerSelectionScreen()),
-                          );
+                          ).then((_) {
+                            final result = game.checkForGameOver();
+                            if (result != null) {
+                              final winners = result['winners'] as List<Player>;
+                              final losers = result['losers'] as List<Player>;
+                              
+                              showDialog(
+                                barrierDismissible: false,
+                                context: context, 
+                                builder: (context) => Dialog(
+                                  backgroundColor: Colors.transparent,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.surface,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 10),
+                                        )
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text('انتهت اللعبة', 
+                                          textAlign: TextAlign.center, 
+                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)
+                                        ),
+                                        const SizedBox(height: 24),
+                                        
+                                        // Losers section
+                                        const Text('قامت على', 
+                                          style: TextStyle(fontSize: 18, color: Colors.redAccent, fontWeight: FontWeight.bold)
+                                        ),
+                                        const SizedBox(height: 8),
+                                          ...losers.map((p) => Text(
+                                            '${p.name} (${p.totalScore})',
+                                            style: TextStyle(
+                                              fontSize: 20, 
+                                              fontWeight: FontWeight.w600,
+                                              color: Theme.of(context).textTheme.bodyLarge?.color,
+                                            ),
+                                          )),
+                                          
+                                          const Divider(height: 32),
+                                          
+                                          // Winners section
+                                          const Text('نقاط اللعبة', 
+                                            style: TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold)
+                                          ),
+                                          const SizedBox(height: 8),
+                                          ...winners.map((p) => Text(
+                                            '${p.name} (${p.totalScore})',
+                                            style: TextStyle(
+                                              fontSize: 20, 
+                                              fontWeight: FontWeight.w600,
+                                              color: Theme.of(context).textTheme.bodyLarge?.color,
+                                            ),
+                                          )),
+                                          
+                                          const SizedBox(height: 32),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            height: 50,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                              ),
+                                              child: const Text('حسناً', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                          });
                         },
                         child: const Text('التسجيل', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
@@ -264,13 +353,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  const Text('هل أنت متأكد من التراجع؟',
+                                  Text('هل أنت متأكد من التراجع؟',
                                       textAlign: TextAlign.right,
-                                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                      style: Theme.of(context).dialogTheme.titleTextStyle),
                                   const SizedBox(height: 12),
-                                  const Text('سيتم إزالة آخر جولة مسجلة. هل تريد المتابعة؟',
+                                  Text('سيتم إزالة آخر جولة مسجلة. هل تريد المتابعة؟',
                                       textAlign: TextAlign.right,
-                                      style: TextStyle(color: Color.fromARGB(255, 255, 82, 82), fontSize: 14)),
+                                      style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
+                                        color: const Color.fromARGB(255, 255, 82, 82),
+                                      )),
                                   const SizedBox(height: 18),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,

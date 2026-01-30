@@ -29,7 +29,9 @@ class PlayerSelectionScreen extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text('التسجيلة رقم $currentRoundNumber', 
-          style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor, fontSize: 16, fontWeight: FontWeight.bold)),
+          style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+            fontWeight: FontWeight.bold,
+          )),
       ),
       body: SafeArea(
         child: Column(
@@ -132,7 +134,7 @@ class PlayerSelectionScreen extends StatelessWidget {
 
                           // Hearts total must be exactly 13 or 26 across all players.
                           if (!(totalHash == 13 || totalHash == 26)) {
-                            errors.add('مجموع نقاط الهاص يجب ان يكون 13 او 26 نقطةفقط\nالمجموع الحالي: $totalHash');
+                            errors.add('مجموع نقاط الهاص يجب ان يكون 13 او 26 نقطة فقط\nالمجموع الحالي: $totalHash');
                           }
                         }
 
@@ -145,7 +147,9 @@ class PlayerSelectionScreen extends StatelessWidget {
                               content: Text(
                                 errors.join('\n\n'),
                                 textAlign: TextAlign.right,
-                                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
+                                style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
+                                  fontSize: 16,
+                                ),
                               ),
                               actions: [
                                 TextButton(
