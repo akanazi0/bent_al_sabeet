@@ -17,12 +17,12 @@ class MainMenuScreen extends StatelessWidget {
                 // Logo
                 Image.asset(
                   'assets/images/logo02.png',
-                  width: 220,
+                  width: 330,
                 ),
                 const SizedBox(height: 20),
                 // Title
                 Text(
-                  'بنت السبيت',
+                  'حساب بنت السبيت',
                   style: Theme.of(context).textTheme.displayLarge,
                 ),
                 const SizedBox(height: 40),

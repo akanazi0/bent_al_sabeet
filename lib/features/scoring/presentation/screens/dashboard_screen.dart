@@ -19,10 +19,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.surface,
-            title: Text('إنهاء اللعبة؟',
+            title: Text('إنهاء اللعبة ؟',
                 textAlign: TextAlign.right,
                 style: Theme.of(context).dialogTheme.titleTextStyle),
-            content: Text('هل أنت متأكد من إنهاء اللعبة؟',
+            content: Text('هل أنت متأكد من إنهاء اللعبة ؟',
                 textAlign: TextAlign.right, 
                 style: Theme.of(context).dialogTheme.contentTextStyle),
             actions: <Widget>[
@@ -353,11 +353,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text('هل أنت متأكد من التراجع؟',
+                                  Text('هل أنت متأكد من التراجع ؟',
                                       textAlign: TextAlign.right,
                                       style: Theme.of(context).dialogTheme.titleTextStyle),
                                   const SizedBox(height: 12),
-                                  Text('سيتم إزالة آخر جولة مسجلة. هل تريد المتابعة؟',
+                                  Text('سيتم إزالة آخر جولة مسجلة. هل تريد المتابعة ؟',
                                       textAlign: TextAlign.right,
                                       style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
                                         color: const Color.fromARGB(255, 255, 82, 82),
