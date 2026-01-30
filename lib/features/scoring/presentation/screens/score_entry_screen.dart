@@ -128,10 +128,14 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                         -40, 
                         0, 
                         (val) {
+                          int finalVal = val;
+                          if (minus == -20 && val == -30) finalVal = -40;
+                          if (minus == -40 && val == -30) finalVal = -20;
+
                           setState(() {
-                            minus = val;
+                            minus = finalVal;
                             // When selecting minus, clear all cards
-                            if (val < 0) {
+                            if (finalVal < 0) {
                               sibeeta = 0;
                               deman = 0;
                               selectedHearts.clear();
