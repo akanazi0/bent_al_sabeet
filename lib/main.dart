@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/providers/game_provider.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/screens/main_menu_screen.dart';
 void main() {
@@ -62,10 +61,10 @@ class MyApp extends StatelessWidget {
   }
 
   ThemeData _buildDarkTheme() {
-    // Define all text styles explicitly with Rubik font to prevent platform fallbacks
-    // Use GoogleFonts.rubikTextTheme as a base to ensure platform-agnostic font loading
-    // then override specific styles for maximum control.
-    final baseTextTheme = GoogleFonts.rubikTextTheme(ThemeData.dark().textTheme);
+    // Define all text styles explicitly with Carlito font (Calibri alternative, local asset)
+    // Using local font files ensures consistent rendering across all platforms including iOS
+    const fontFamily = 'Carlito';
+    final baseTextTheme = ThemeData.dark().textTheme;
     
     final textTheme = baseTextTheme.copyWith(
       // Display styles (large titles)
@@ -172,7 +171,7 @@ class MyApp extends StatelessWidget {
       platform: TargetPlatform.android,
       // Standardize density across Web, Desktop, and Mobile
       visualDensity: VisualDensity.standard,
-      fontFamily: GoogleFonts.rubik().fontFamily, // Global font family from GoogleFonts
+      fontFamily: fontFamily, // Global font family from GoogleFonts
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF131416),
       
@@ -182,10 +181,10 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFF3574F0),
         textTheme: CupertinoTextThemeData(
           primaryColor: Colors.white,
-          textStyle: GoogleFonts.rubik(color: const Color(0xFFA9B7C6)),
-          actionTextStyle: GoogleFonts.rubik(color: const Color(0xFF3574F0)),
-          navActionTextStyle: GoogleFonts.rubik(color: const Color(0xFF3574F0)),
-          navTitleTextStyle: GoogleFonts.rubik(
+          textStyle: TextStyle(fontFamily: fontFamily, color: const Color(0xFFA9B7C6)),
+          actionTextStyle: TextStyle(fontFamily: fontFamily, color: const Color(0xFF3574F0)),
+          navActionTextStyle: TextStyle(fontFamily: fontFamily, color: const Color(0xFF3574F0)),
+          navTitleTextStyle: TextStyle(fontFamily: fontFamily, 
             color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
@@ -234,7 +233,7 @@ class MyApp extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: GoogleFonts.rubik(
+        titleTextStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: const Color(0xFFA9B7C6),
@@ -256,7 +255,7 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           elevation: 0,
-          textStyle: GoogleFonts.rubik(
+          textStyle: TextStyle(fontFamily: fontFamily, 
             fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -268,7 +267,7 @@ class MyApp extends StatelessWidget {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: const Color(0xFF3574F0),
-          textStyle: GoogleFonts.rubik(
+          textStyle: TextStyle(fontFamily: fontFamily, 
             fontSize: 14,
             fontWeight: FontWeight.w600,
             letterSpacing: 0,
@@ -284,7 +283,7 @@ class MyApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: GoogleFonts.rubik(
+          textStyle: TextStyle(fontFamily: fontFamily, 
             fontSize: 16,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
@@ -299,13 +298,13 @@ class MyApp extends StatelessWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
-        titleTextStyle: GoogleFonts.rubik(
+        titleTextStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 16,
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: 0,
         ),
-        contentTextStyle: GoogleFonts.rubik(
+        contentTextStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFA9B7C6),
@@ -334,25 +333,25 @@ class MyApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.redAccent),
         ),
-        labelStyle: GoogleFonts.rubik(
+        labelStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
-        hintStyle: GoogleFonts.rubik(
+        hintStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: const Color(0xFF6B7280),
           letterSpacing: 0,
         ),
-        helperStyle: GoogleFonts.rubik(
+        helperStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
-        errorStyle: GoogleFonts.rubik(
+        errorStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: Colors.redAccent,
@@ -365,12 +364,12 @@ class MyApp extends StatelessWidget {
         backgroundColor: const Color(0xFF2B2B2B),
         selectedColor: const Color(0xFF3574F0),
         disabledColor: const Color(0xFF2B2B2B).withOpacity(0.5),
-        labelStyle: GoogleFonts.rubik(
+        labelStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 14,
           fontWeight: FontWeight.w500,
           letterSpacing: 0,
         ),
-        secondaryLabelStyle: GoogleFonts.rubik(
+        secondaryLabelStyle: TextStyle(fontFamily: fontFamily, 
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,

@@ -368,10 +368,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   child: TextField(
                     controller: _controllers[i],
                     focusNode: _focusNodes[i],
-                    keyboardType: const TextInputType.numberWithOptions(
-                      signed: true,
-                      decimal: false,
-                    ),
+                    keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
                     ],

@@ -36,8 +36,8 @@ flutter:
     - assets/fonts/
 
   fonts:
-    - family: Rubik
+    - family: Carlito
       fonts:
-        - asset: assets/fonts/Rubik-Regular.ttf
-        - asset: assets/fonts/Rubik-Bold.ttf
+        - asset: assets/fonts/Carlito-Regular.ttf
+        - asset: assets/fonts/Carlito-Bold.ttf
           weight: 700
