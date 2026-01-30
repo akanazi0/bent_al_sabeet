@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/providers/game_provider.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/screens/main_menu_screen.dart';
 void main() {
@@ -47,31 +48,41 @@ class MyApp extends StatelessWidget {
         physics: const ClampingScrollPhysics(),
         scrollbars: true,
       ),
+      // Fix scaling issues: Overriding textScaler to ensure consistency across iOS system settings
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.noScaling,
+          ),
+          child: child!,
+        );
+      },
     );
   }
 
   ThemeData _buildDarkTheme() {
     // Define all text styles explicitly with Rubik font to prevent platform fallbacks
-    const textTheme = TextTheme(
+    // Use GoogleFonts.rubikTextTheme as a base to ensure platform-agnostic font loading
+    // then override specific styles for maximum control.
+    final baseTextTheme = GoogleFonts.rubikTextTheme(ThemeData.dark().textTheme);
+    
+    final textTheme = baseTextTheme.copyWith(
       // Display styles (large titles)
-      displayLarge: TextStyle(
-        fontFamily: 'Rubik',
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
         fontSize: 32,
         fontWeight: FontWeight.w900,
         color: Colors.white,
-        letterSpacing: 0,
+        letterSpacing: -0.5,
         height: 1.2,
       ),
-      displayMedium: TextStyle(
-        fontFamily: 'Rubik',
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         color: Colors.white,
-        letterSpacing: 0,
+        letterSpacing: -0.5,
         height: 1.2,
       ),
-      displaySmall: TextStyle(
-        fontFamily: 'Rubik',
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: Colors.white,
@@ -79,87 +90,77 @@ class MyApp extends StatelessWidget {
         height: 1.2,
       ),
       // Headline styles
-      headlineLarge: TextStyle(
-        fontFamily: 'Rubik',
+      headlineLarge: baseTextTheme.headlineLarge?.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w700,
         color: Colors.white,
         letterSpacing: 0,
         height: 1.3,
       ),
-      headlineMedium: TextStyle(
-        fontFamily: 'Rubik',
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: Color(0xFFA9B7C6),
+        color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.3,
       ),
-      headlineSmall: TextStyle(
-        fontFamily: 'Rubik',
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: Color(0xFFA9B7C6),
+        color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.3,
       ),
       // Title styles
-      titleLarge: TextStyle(
-        fontFamily: 'Rubik',
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w700,
         color: Colors.white,
         letterSpacing: 0,
         height: 1.3,
       ),
-      titleMedium: TextStyle(
-        fontFamily: 'Rubik',
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: Colors.white,
         letterSpacing: 0,
         height: 1.3,
       ),
-      titleSmall: TextStyle(
-        fontFamily: 'Rubik',
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: Color(0xFFA9B7C6),
+        color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.3,
       ),
       // Body styles (most common)
-      bodyLarge: TextStyle(
-        fontFamily: 'Rubik',
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        color: Color(0xFFA9B7C6),
+        color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.5,
       ),
-      bodyMedium: TextStyle(
-        fontFamily: 'Rubik',
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: Color(0xFFA9B7C6),
+        color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.5,
       ),
-      bodySmall: TextStyle(
-        fontFamily: 'Rubik',
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: Color(0xFFA9B7C6),
+        color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.5,
       ),
       // Label styles (buttons, chips)
-      labelLarge: TextStyle(
-        fontFamily: 'Rubik',
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         color: Colors.white,
-        letterSpacing: 0,
+        letterSpacing: 0.5,
         height: 1.2,
       ),
     );
@@ -210,20 +211,19 @@ class MyApp extends StatelessWidget {
       ),
       
       // AppBar theme
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF131416),
-        foregroundColor: Color(0xFFA9B7C6),
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFF131416),
+        foregroundColor: const Color(0xFFA9B7C6),
         elevation: 0,
         centerTitle: true,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: TextStyle(
-          fontFamily: 'Rubik',
+        titleTextStyle: GoogleFonts.rubik(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: Color(0xFFA9B7C6),
+          color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Color(0xFFA9B7C6),
           size: 24,
         ),
@@ -239,11 +239,10 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           elevation: 0,
-          textStyle: const TextStyle(
-            fontFamily: 'Rubik',
+          textStyle: GoogleFonts.rubik(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            letterSpacing: 0,
+            letterSpacing: 0.5,
           ),
         ),
       ),
@@ -252,8 +251,7 @@ class MyApp extends StatelessWidget {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: const Color(0xFF3574F0),
-          textStyle: const TextStyle(
-            fontFamily: 'Rubik',
+          textStyle: GoogleFonts.rubik(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             letterSpacing: 0,
@@ -269,8 +267,7 @@ class MyApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: const TextStyle(
-            fontFamily: 'Rubik',
+          textStyle: GoogleFonts.rubik(
             fontSize: 16,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
@@ -279,24 +276,22 @@ class MyApp extends StatelessWidget {
       ),
       
       // Dialog theme
-      dialogTheme: const DialogThemeData(
-        backgroundColor: Color(0xFF2B2B2B),
+      dialogTheme: DialogThemeData(
+        backgroundColor: const Color(0xFF2B2B2B),
         elevation: 8,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
-        titleTextStyle: TextStyle(
-          fontFamily: 'Rubik',
+        titleTextStyle: GoogleFonts.rubik(
           fontSize: 16,
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: 0,
         ),
-        contentTextStyle: TextStyle(
-          fontFamily: 'Rubik',
+        contentTextStyle: GoogleFonts.rubik(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: Color(0xFFA9B7C6),
+          color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
           height: 1.5,
         ),
@@ -322,29 +317,25 @@ class MyApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.redAccent),
         ),
-        labelStyle: const TextStyle(
-          fontFamily: 'Rubik',
+        labelStyle: GoogleFonts.rubik(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: Color(0xFFA9B7C6),
+          color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
-        hintStyle: const TextStyle(
-          fontFamily: 'Rubik',
+        hintStyle: GoogleFonts.rubik(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: Color(0xFF6B7280),
+          color: const Color(0xFF6B7280),
           letterSpacing: 0,
         ),
-        helperStyle: const TextStyle(
-          fontFamily: 'Rubik',
+        helperStyle: GoogleFonts.rubik(
           fontSize: 12,
           fontWeight: FontWeight.w400,
-          color: Color(0xFFA9B7C6),
+          color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
-        errorStyle: const TextStyle(
-          fontFamily: 'Rubik',
+        errorStyle: GoogleFonts.rubik(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: Colors.redAccent,
@@ -357,14 +348,12 @@ class MyApp extends StatelessWidget {
         backgroundColor: const Color(0xFF2B2B2B),
         selectedColor: const Color(0xFF3574F0),
         disabledColor: const Color(0xFF2B2B2B).withOpacity(0.5),
-        labelStyle: const TextStyle(
-          fontFamily: 'Rubik',
+        labelStyle: GoogleFonts.rubik(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           letterSpacing: 0,
         ),
-        secondaryLabelStyle: const TextStyle(
-          fontFamily: 'Rubik',
+        secondaryLabelStyle: GoogleFonts.rubik(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,
