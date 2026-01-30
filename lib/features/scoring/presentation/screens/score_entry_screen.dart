@@ -125,7 +125,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                         'قري', 
                         minus, 
                         10, 
-                        -20, 
+                        -40, 
                         0, 
                         (val) {
                           setState(() {
