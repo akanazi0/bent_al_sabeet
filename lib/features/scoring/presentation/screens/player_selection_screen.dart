@@ -110,9 +110,9 @@ class PlayerSelectionScreen extends StatelessWidget {
                         int totalHash = 0;
                         for (int i = 0; i < players.length; i++) {
                           final comps = game.pendingComponentsForPlayer(i) ?? {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
-                          if ((comps['sibeeta'] ?? 0) > 0) sibeetaCount++;
-                          if ((comps['deman'] ?? 0) > 0) demanCount++;
-                          totalHash += (comps['hash'] ?? 0);
+                          if ((comps['sibeeta'] as num? ?? 0).toInt() > 0) sibeetaCount++;
+                          if ((comps['deman'] as num? ?? 0).toInt() > 0) demanCount++;
+                          totalHash += (comps['hash'] as num? ?? 0).toInt();
                         }
 
                         final List<String> errors = [];

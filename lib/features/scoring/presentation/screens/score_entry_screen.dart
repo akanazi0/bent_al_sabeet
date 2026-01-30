@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/game_provider.dart';
 
 class ScoreEntryScreen extends StatefulWidget {
@@ -26,6 +27,24 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
     for (int i = 0; i < 13; i++) {
       _boxKeys[i] = GlobalKey();
     }
+    
+    // Load existing pending scores if any
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final game = Provider.of<GameProvider>(context, listen: false);
+      final index = game.selectedPlayerIndex;
+      if (index != null) {
+        final pending = game.pendingComponentsForPlayer(index);
+        if (pending != null) {
+          setState(() {
+            sibeeta = pending['sibeeta'] as int? ?? 0;
+            deman = pending['deman'] as int? ?? 0;
+            selectedHearts = Set.from(pending['selectedHearts'] as Set<int>? ?? {});
+            isHeartsDoubled = (pending['hash'] as int? ?? 0) > selectedHearts.length;
+            minus = pending['minus'] as int? ?? 0;
+          });
+        }
+      }
+    });
   }
 
 
@@ -141,8 +160,14 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                     elevation: 0,
                   ),
                   onPressed: () {
-                    context.read<GameProvider>().addPendingScoreComponents(
-                          sibeeta: sibeeta, deman: deman, hash: hash, minus: minus);
+                    final game = context.read<GameProvider>();
+                    game.addPendingScoreComponents(
+                      sibeeta: sibeeta, 
+                      deman: deman, 
+                      hash: hash, 
+                      minus: minus,
+                      selectedHearts: selectedHearts,
+                    );
                     Navigator.pop(context);
                   },
                   child: Text(
@@ -159,6 +184,11 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
   }
 
   Widget _buildHeartsGrid() {
+    final game = Provider.of<GameProvider>(context);
+    final int currentPlayerIndex = game.selectedPlayerIndex ?? -1;
+    final int othersCount = game.getTotalHeartsTakenByOthers(currentPlayerIndex);
+    final int availableCount = 13 - othersCount;
+
     return Opacity(
       opacity: areCardsDisabled ? 0.5 : 1.0,
       child: Container(
@@ -226,16 +256,17 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                 runSpacing: 8,
                 children: List.generate(13, (index) {
                   final isSelected = selectedHearts.contains(index);
+                  final isClosed = index >= availableCount;
+                  
                   return GestureDetector(
                     key: _boxKeys[index],
-                    onTap: areCardsDisabled ? null : () {
+                    onTap: (areCardsDisabled || isClosed) ? null : () {
                       setState(() {
-                        // Sequential selection: selecting N selects all from 0 to N
                         if (isSelected) {
                           // Deselect this and all higher numbers
                           selectedHearts.removeWhere((i) => i >= index);
                         } else {
-                          // Select this and all lower numbers
+                          // Select this and all lower numbers up to available
                           for (int i = 0; i <= index; i++) {
                             selectedHearts.add(i);
                           }
@@ -251,14 +282,18 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: isSelected 
-                            ? Theme.of(context).colorScheme.primary 
-                            : Theme.of(context).colorScheme.surface,
+                        color: isClosed
+                            ? Theme.of(context).dividerColor.withOpacity(0.3)
+                            : isSelected 
+                                ? Theme.of(context).colorScheme.primary 
+                                : Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).dividerColor,
+                          color: isClosed
+                              ? Theme.of(context).dividerColor
+                              : isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).dividerColor,
                           width: 2,
                         ),
                         boxShadow: isSelected
@@ -275,9 +310,11 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                         child: Text(
                           '${index + 1}',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: isSelected 
-                                ? Colors.white 
-                                : Theme.of(context).textTheme.bodyLarge?.color,
+                            color: isClosed 
+                                ? Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.2)
+                                : isSelected 
+                                    ? Colors.white 
+                                    : Theme.of(context).textTheme.bodyLarge?.color,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -333,12 +370,14 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                   child: GestureDetector(
                     onTap: areCardsDisabled ? null : () {
                       setState(() {
-                        if (selectedHearts.length == 13) {
+                        if (selectedHearts.length == availableCount) {
                           // Deselect all
                           selectedHearts.clear();
                         } else {
-                          // Select all
-                          selectedHearts = Set.from(List.generate(13, (i) => i));
+                          // Select all available
+                          for (int i = 0; i < availableCount; i++) {
+                            selectedHearts.add(i);
+                          }
                         }
                         // When adding hearts, reset minus
                         if (selectedHearts.isNotEmpty && minus < 0) {
@@ -358,7 +397,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          selectedHearts.length == 13 ? 'إلغاء الكل' : 'تحديد الكل',
+                          selectedHearts.length == availableCount ? 'إلغاء الكل' : 'تحديد الكل',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 15,
@@ -379,6 +418,11 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
 
   void _handleDrag(Offset globalPosition) {
     if (areCardsDisabled) return;
+
+    final game = Provider.of<GameProvider>(context, listen: false);
+    final int currentPlayerIndex = game.selectedPlayerIndex ?? -1;
+    final int othersCount = game.getTotalHeartsTakenByOthers(currentPlayerIndex);
+    final int availableCount = 13 - othersCount;
     
     // Check which box the drag position is over
     for (int i = 0; i < 13; i++) {
@@ -395,6 +439,8 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
             globalPosition.dy >= boxPosition.dy &&
             globalPosition.dy <= boxPosition.dy + boxSize.height) {
         // Found the box being dragged over
+        if (i >= availableCount) return; // Cannot drag into closed boxes
+        
         setState(() {
           // 1. Select everything up to this box (inclusive)
           for (int j = 0; j <= i; j++) {

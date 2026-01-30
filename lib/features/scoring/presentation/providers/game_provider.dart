@@ -17,7 +17,8 @@ class GameProvider extends ChangeNotifier {
   int pointsLimit = 152; // Default limit
   // Store pending score components per player so we can validate special cards
   // (بنت السبيت, عشرة الديمن, الهاص, الماينس) individually before finalizing.
-  final Map<int, Map<String, int>> _pendingScores = {};
+  // Using Map<String, dynamic> to store 'selectedHearts' as a Set<int>.
+  final Map<int, Map<String, dynamic>> _pendingScores = {};
 
   int? get selectedPlayerIndex => _selectedPlayerIndex;
 
@@ -45,13 +46,20 @@ class GameProvider extends ChangeNotifier {
 
 
   /// Add pending score components for the currently selected player.
-  void addPendingScoreComponents({required int sibeeta, required int deman, required int hash, required int minus}) {
+  void addPendingScoreComponents({
+    required int sibeeta, 
+    required int deman, 
+    required int hash, 
+    required int minus,
+    Set<int>? selectedHearts,
+  }) {
     if (players == null || _selectedPlayerIndex == null) return;
     _pendingScores[_selectedPlayerIndex!] = {
       'sibeeta': sibeeta,
       'deman': deman,
       'hash': hash,
       'minus': minus,
+      'selectedHearts': selectedHearts ?? <int>{},
     };
     _selectedPlayerIndex = null;
     notifyListeners();
@@ -64,7 +72,13 @@ class GameProvider extends ChangeNotifier {
     if (players == null) return;
     for (int i = 0; i < players!.length; i++) {
       if (!_pendingScores.containsKey(i)) {
-        _pendingScores[i] = {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
+        _pendingScores[i] = {
+          'sibeeta': 0, 
+          'deman': 0, 
+          'hash': 0, 
+          'minus': 0,
+          'selectedHearts': <int>{},
+        };
       }
     }
     notifyListeners();
@@ -78,7 +92,10 @@ class GameProvider extends ChangeNotifier {
       final components = _pendingScores.containsKey(i)
           ? _pendingScores[i]!
           : {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
-      final val = (components['sibeeta'] ?? 0) + (components['deman'] ?? 0) + (components['hash'] ?? 0) + (components['minus'] ?? 0);
+      final val = (components['sibeeta'] as int? ?? 0) + 
+                  (components['deman'] as int? ?? 0) + 
+                  (components['hash'] as int? ?? 0) + 
+                  (components['minus'] as int? ?? 0);
       players![i].scores.add(val);
     }
 
@@ -123,11 +140,28 @@ class GameProvider extends ChangeNotifier {
   int? pendingScoreForPlayer(int index) {
     final c = _pendingScores[index];
     if (c == null) return null;
-    return (c['sibeeta'] ?? 0) + (c['deman'] ?? 0) + (c['hash'] ?? 0) + (c['minus'] ?? 0);
+    return (c['sibeeta'] as int? ?? 0) + 
+           (c['deman'] as int? ?? 0) + 
+           (c['hash'] as int? ?? 0) + 
+           (c['minus'] as int? ?? 0);
   }
 
   /// Returns the raw pending components map for a player, or null.
-  Map<String, int>? pendingComponentsForPlayer(int index) => _pendingScores[index];
+  Map<String, dynamic>? pendingComponentsForPlayer(int index) => _pendingScores[index];
+
+  /// Returns the total count of hearts taken by OTHER players in the current round.
+  int getTotalHeartsTakenByOthers(int currentPlayerIndex) {
+    int count = 0;
+    _pendingScores.forEach((playerIdx, components) {
+      if (playerIdx != currentPlayerIndex) {
+        final hearts = components['selectedHearts'] as Set<int>?;
+        if (hearts != null) {
+          count += hearts.length;
+        }
+      }
+    });
+    return count;
+  }
 
 
   void undoLastRound() {
