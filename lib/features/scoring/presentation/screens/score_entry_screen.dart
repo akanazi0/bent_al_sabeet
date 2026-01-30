@@ -395,16 +395,20 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
             globalPosition.dx <= boxPosition.dx + boxSize.width &&
             globalPosition.dy >= boxPosition.dy &&
             globalPosition.dy <= boxPosition.dy + boxSize.height) {
-          // Found the box being dragged over - select it and all previous
-          setState(() {
-            for (int j = 0; j <= i; j++) {
-              selectedHearts.add(j);
-            }
-            // When adding hearts, reset minus
-            if (minus < 0) {
-              minus = 0;
-            }
-          });
+        // Found the box being dragged over
+        setState(() {
+          // 1. Select everything up to this box (inclusive)
+          for (int j = 0; j <= i; j++) {
+            selectedHearts.add(j);
+          }
+          // 2. Deselect everything AFTER this box
+          selectedHearts.removeWhere((index) => index > i);
+          
+          // When adding hearts, reset minus
+          if (selectedHearts.isNotEmpty && minus < 0) {
+            minus = 0;
+          }
+        });
           return; // Exit once we found the box
         }
       }

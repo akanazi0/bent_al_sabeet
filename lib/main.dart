@@ -39,18 +39,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'حاسبة بنت السبيت',
+      themeMode: ThemeMode.dark,
       theme: _buildDarkTheme(),
       home: const MainMenuScreen(),
-      // Force Rubik font globally - prevents platform-specific font fallbacks
-      builder: (context, child) {
-        return DefaultTextStyle(
-          style: const TextStyle(
-            fontFamily: 'Rubik',
-            color: Color(0xFFA9B7C6),
-          ),
-          child: child!,
-        );
-      },
+      // Standardize scroll behavior across all platforms
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        physics: const ClampingScrollPhysics(),
+        scrollbars: true,
+      ),
     );
   }
 
@@ -170,6 +166,10 @@ class MyApp extends StatelessWidget {
 
     return ThemeData(
       useMaterial3: true,
+      // Trick Material widgets into using the same platform style everywhere
+      platform: TargetPlatform.android,
+      // Standardize density across Web, Desktop, and Mobile
+      visualDensity: VisualDensity.standard,
       fontFamily: 'Rubik', // Global font family
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF131416),
