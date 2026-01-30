@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum ScoringMode { card, manual }
+
 class Player {
   final String name;
   final List<int> scores = [];
@@ -15,6 +17,8 @@ class GameProvider extends ChangeNotifier {
   List<Player>? players;
   int? _selectedPlayerIndex;
   int pointsLimit = 152; // Default limit
+  ScoringMode scoringMode = ScoringMode.card; // Default to card mode
+  bool isHeartsDoubled = false; // Global hearts doubled state for current round
   // Store pending score components per player so we can validate special cards
   // (بنت السبيت, عشرة الديمن, الهاص, الماينس) individually before finalizing.
   // Using Map<String, dynamic> to store 'selectedHearts' as a Set<int>.
@@ -44,6 +48,42 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setScoringMode(ScoringMode mode) {
+    scoringMode = mode;
+    notifyListeners();
+  }
+
+  void toggleHeartsDoubled() {
+    isHeartsDoubled = !isHeartsDoubled;
+    // Recalculate all pending scores with the new doubled state
+    _recalculatePendingScores();
+    notifyListeners();
+  }
+
+  /// Recalculate all pending scores based on current doubled state
+  void _recalculatePendingScores() {
+    _pendingScores.forEach((playerIndex, components) {
+      final selectedHearts = components['selectedHearts'] as Set<int>? ?? <int>{};
+      final heartsCount = selectedHearts.length;
+      // Update hash based on current doubled state
+      components['hash'] = heartsCount * (isHeartsDoubled ? 2 : 1);
+    });
+  }
+
+  /// Add manual score for the currently selected player (used in manual mode).
+  void addManualScore(int score) {
+    if (players == null || _selectedPlayerIndex == null) return;
+    _pendingScores[_selectedPlayerIndex!] = {
+      'sibeeta': 0,
+      'deman': 0,
+      'hash': 0,
+      'minus': score,
+      'selectedHearts': <int>{},
+    };
+    _selectedPlayerIndex = null;
+    notifyListeners();
+  }
+
 
   /// Add pending score components for the currently selected player.
   void addPendingScoreComponents({
@@ -54,10 +94,14 @@ class GameProvider extends ChangeNotifier {
     Set<int>? selectedHearts,
   }) {
     if (players == null || _selectedPlayerIndex == null) return;
+    // Store the hearts count and recalculate hash based on current doubled state
+    final heartsCount = selectedHearts?.length ?? 0;
+    final actualHash = heartsCount * (isHeartsDoubled ? 2 : 1);
+    
     _pendingScores[_selectedPlayerIndex!] = {
       'sibeeta': sibeeta,
       'deman': deman,
-      'hash': hash,
+      'hash': actualHash,
       'minus': minus,
       'selectedHearts': selectedHearts ?? <int>{},
     };
@@ -84,6 +128,25 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Clear all pending scores for the current round and set all players to 0
+  void clearPendingScores() {
+    _pendingScores.clear();
+    isHeartsDoubled = false;
+    // Prefill all players with 0
+    if (players != null) {
+      for (int i = 0; i < players!.length; i++) {
+        _pendingScores[i] = {
+          'sibeeta': 0,
+          'deman': 0,
+          'hash': 0,
+          'minus': 0,
+          'selectedHearts': <int>{},
+        };
+      }
+    }
+    notifyListeners();
+  }
+
   void finalizeRound() {
     if (players == null) return;
     // Commit pending scores to each player's score list. If a player has no
@@ -101,6 +164,7 @@ class GameProvider extends ChangeNotifier {
 
     // Clear pending scores after committing.
     _pendingScores.clear();
+    isHeartsDoubled = false; // Reset doubled state for next round
 
     // Update king: mark ALL players tied for the minimum score.
     int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
@@ -117,7 +181,9 @@ class GameProvider extends ChangeNotifier {
     }
     int prevDealerIndex = players!.indexWhere((p) => p.isDealer);
     // clear all dealers first
-    for (var p in players!) p.isDealer = false;
+    for (var p in players!) {
+      p.isDealer = false;
+    }
     if (tiedDealerIndices.isNotEmpty) {
       if (prevDealerIndex != -1 && tiedDealerIndices.contains(prevDealerIndex)) {
         players![prevDealerIndex].isDealer = true;
@@ -148,6 +214,32 @@ class GameProvider extends ChangeNotifier {
 
   /// Returns the raw pending components map for a player, or null.
   Map<String, dynamic>? pendingComponentsForPlayer(int index) => _pendingScores[index];
+
+  /// Check if بنت السبيت (Queen of Spades) has been claimed by another player
+  bool isSibeetaClaimedByOther(int currentPlayerIndex) {
+    for (int i = 0; i < (players?.length ?? 0); i++) {
+      if (i != currentPlayerIndex) {
+        final components = _pendingScores[i];
+        if (components != null && (components['sibeeta'] as num? ?? 0).toInt() > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /// Check if عشرة الديمن (10 of Diamonds) has been claimed by another player
+  bool isDemanClaimedByOther(int currentPlayerIndex) {
+    for (int i = 0; i < (players?.length ?? 0); i++) {
+      if (i != currentPlayerIndex) {
+        final components = _pendingScores[i];
+        if (components != null && (components['deman'] as num? ?? 0).toInt() > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   /// Returns the total count of hearts taken by OTHER players in the current round.
   int getTotalHeartsTakenByOthers(int currentPlayerIndex) {

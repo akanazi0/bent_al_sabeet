@@ -14,7 +14,6 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
   int sibeeta = 0;
   int deman = 0;
   Set<int> selectedHearts = {}; // Track selected heart cards
-  bool isHeartsDoubled = false; // Track if hearts are doubled
   int minus = 0;
   
   // For drag selection
@@ -39,7 +38,6 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
             sibeeta = pending['sibeeta'] as int? ?? 0;
             deman = pending['deman'] as int? ?? 0;
             selectedHearts = Set.from(pending['selectedHearts'] as Set<int>? ?? {});
-            isHeartsDoubled = (pending['hash'] as int? ?? 0) > selectedHearts.length;
             minus = pending['minus'] as int? ?? 0;
           });
         }
@@ -49,13 +47,15 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
 
 
   // Computed property for hash total (1 point per card, doubled if button pressed)
-  int get hash => selectedHearts.length * (isHeartsDoubled ? 2 : 1);
+  int hash(GameProvider game) => selectedHearts.length * (game.isHeartsDoubled ? 2 : 1);
 
   // When minus is selected, other cards should be disabled
   bool get areCardsDisabled => minus < 0;
 
   @override
   Widget build(BuildContext context) {
+    final game = Provider.of<GameProvider>(context);
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -96,7 +96,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                             }
                           });
                         },
-                        isDisabled: areCardsDisabled,
+                        isDisabled: areCardsDisabled || (sibeeta == 0 && game.isSibeetaClaimedByOther(game.selectedPlayerIndex ?? -1)),
                       ),
                       const SizedBox(height: 12),
                       _buildIncrementOption(
@@ -115,7 +115,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                             }
                           });
                         },
-                        isDisabled: areCardsDisabled,
+                        isDisabled: areCardsDisabled || (deman == 0 && game.isDemanClaimedByOther(game.selectedPlayerIndex ?? -1)),
                       ),
                       const SizedBox(height: 12),
                       _buildHeartsGrid(),
@@ -139,11 +139,10 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                               sibeeta = 0;
                               deman = 0;
                               selectedHearts.clear();
-                              isHeartsDoubled = false;
                             }
                           });
                         },
-                        isDisabled: sibeeta > 0 || deman > 0 || hash > 0, // Disable minus when cards selected
+                        isDisabled: sibeeta > 0 || deman > 0 || hash(game) > 0, // Disable minus when cards selected
                       ),
                       const SizedBox(height: 8),
                     ],
@@ -168,7 +167,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                     game.addPendingScoreComponents(
                       sibeeta: sibeeta, 
                       deman: deman, 
-                      hash: hash, 
+                      hash: hash(game), 
                       minus: minus,
                       selectedHearts: selectedHearts,
                     );
@@ -240,7 +239,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                     ),
                   ),
                   child: Text(
-                    '$hash',
+                    '${hash(game)}',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 18,
@@ -337,14 +336,12 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: areCardsDisabled ? null : () {
-                      setState(() {
-                        isHeartsDoubled = !isHeartsDoubled;
-                      });
+                      context.read<GameProvider>().toggleHeartsDoubled();
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: isHeartsDoubled
+                        color: game.isHeartsDoubled
                             ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
@@ -357,7 +354,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                         child: Text(
                           'دبل',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isHeartsDoubled
+                            color: game.isHeartsDoubled
                                 ? Colors.white
                                 : Theme.of(context).colorScheme.primary,
                             fontSize: 15,
