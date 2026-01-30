@@ -10,11 +10,11 @@ void showUndoDialog(BuildContext context) {
       content: const Text('في حال ضغطت على حسنا باللون الأحمر سيتم مسح آخر جلسة'),
       actions: [
         TextButton(
-          child: const Text('إلغاء', style: TextStyle(color: Colors.blue)),
+          child: Text('إلغاء', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.blue)),
           onPressed: () => Navigator.pop(context),
         ),
         TextButton(
-          child: const Text('حسنا', style: TextStyle(color: Colors.red)),
+          child: Text('حسنا', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red)),
           onPressed: () {
             Provider.of<GameProvider>(context, listen: false).undoLastRound();
             Navigator.pop(context);

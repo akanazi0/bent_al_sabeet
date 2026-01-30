@@ -28,11 +28,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('لا', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                child: Text('لا', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('نعم', style: TextStyle(color: Colors.redAccent)),
+                child: Text('نعم', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.redAccent)),
               ),
             ],
           ),
@@ -134,12 +134,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(p.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16)),
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16)),
                               const SizedBox(height: 4),
                               Text('${p.totalScore}',
-                                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 18, fontWeight: FontWeight.bold)),
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
 
-                              if (p.isDealer) const Text('الموزع', style: TextStyle(color: Colors.redAccent, fontSize: 16)),
+                              if (p.isDealer) Text('الموزع', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent, fontSize: 16)),
                               const SizedBox(height: 8),
                             ],
                           ),
@@ -207,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     : null,
                               ),
                                 child: Center(
-                                  child: Text(text, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontWeight: FontWeight.bold)),
+                                  child: Text(text, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
                                 ),
                             );
                           }),
@@ -266,37 +266,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       children: [
                                         const Text('انتهت اللعبة', 
                                           textAlign: TextAlign.center, 
-                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)
+                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Rubik')
                                         ),
                                         const SizedBox(height: 24),
                                         
                                         // Losers section
-                                        const Text('قامت على', 
-                                          style: TextStyle(fontSize: 18, color: Colors.redAccent, fontWeight: FontWeight.bold)
+                                        Text('قامت على', 
+                                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.redAccent, fontWeight: FontWeight.bold)
                                         ),
                                         const SizedBox(height: 8),
                                           ...losers.map((p) => Text(
                                             '${p.name} (${p.totalScore})',
-                                            style: TextStyle(
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                               fontSize: 20, 
                                               fontWeight: FontWeight.w600,
-                                              color: Theme.of(context).textTheme.bodyLarge?.color,
                                             ),
                                           )),
                                           
                                           const Divider(height: 32),
                                           
                                           // Winners section
-                                          const Text('نقاط اللعبة', 
-                                            style: TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold)
+                                          Text('نقاط اللعبة', 
+                                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.bold)
                                           ),
                                           const SizedBox(height: 8),
                                           ...winners.map((p) => Text(
                                             '${p.name} (${p.totalScore})',
-                                            style: TextStyle(
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                               fontSize: 20, 
                                               fontWeight: FontWeight.w600,
-                                              color: Theme.of(context).textTheme.bodyLarge?.color,
                                             ),
                                           )),
                                           
@@ -313,7 +311,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 foregroundColor: Colors.white,
                                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                               ),
-                                              child: const Text('حسناً', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                              child: Text('حسناً', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
                                             ),
                                           ),
                                       ],
@@ -324,7 +322,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             }
                           });
                         },
-                        child: const Text('التسجيل', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text('التسجيل', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ),
@@ -368,12 +366,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     children: [
                                       TextButton(
                                         onPressed: () => Navigator.of(c).pop(false),
-                                        child: Text('لا', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14)),
+                                        child: Text('لا', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)),
                                       ),
                                       const SizedBox(width: 12),
                                       TextButton(
                                         onPressed: () => Navigator.of(c).pop(true),
-                                        child: const Text('نعم', style: TextStyle(color: Colors.redAccent, fontSize: 14)),
+                                        child: Text('نعم', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent)),
                                       ),
                                     ],
                                   )

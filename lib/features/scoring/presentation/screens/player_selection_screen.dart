@@ -71,12 +71,16 @@ class PlayerSelectionScreen extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(p.name, style: const TextStyle(fontSize: 18, color: Color(0xFFA9B7C6))),
+                        Text(p.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18, color: const Color(0xFFA9B7C6))),
                         if (hasScoredThisRound)
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text('${game.pendingScoreForPlayer(i)}', 
-                              style: const TextStyle(color: Color(0xFF3574F0), fontWeight: FontWeight.bold, fontSize: 20)),
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                color: const Color(0xFF3574F0), 
+                                fontWeight: FontWeight.bold, 
+                                fontSize: 20
+                              )),
                           ),
                       ],
                     ),
@@ -154,7 +158,7 @@ class PlayerSelectionScreen extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.of(ctx).pop(),
-                                  child: Text('حسنا', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                                  child: Text('حسنا', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
                                 )
                               ],
                             ),
@@ -166,8 +170,8 @@ class PlayerSelectionScreen extends StatelessWidget {
                         Navigator.pop(context); // العودة للداشبورد يدوياً
                       }
                     : null,
-                child: const Text('تسجيل', 
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                child: Text('تسجيل', 
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
               ),
             ),
           ),

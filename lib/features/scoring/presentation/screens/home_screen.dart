@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           spacing: 8.0,
                           children: [4, 5].map((count) => ChoiceChip(
                             showCheckmark: false, // Removed checkmark
-                            label: Text('$count', style: const TextStyle(fontSize: 16)),
+                            label: Text('$count', style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16)),
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             selected: playerCount == count,
                             onSelected: (selected) {
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     : Theme.of(context).dividerColor,
                               ),
                             ),
-                            labelStyle: TextStyle(
+                            labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: playerCount == count
                                   ? Colors.white
                                   : Theme.of(context).textTheme.bodyMedium?.color,
@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                            style: const TextStyle(
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontSize: 16, // Matching font size
                               fontWeight: FontWeight.w600,
                             ),
@@ -200,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: InputDecoration(
                         labelText: 'اسم اللاعب ${i + 1}',
                         hintText: 'اللاعب ${i + 1}',
-                        hintStyle: TextStyle(
+                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
                         ),
                         labelStyle: Theme.of(context).inputDecorationTheme.labelStyle?.copyWith(

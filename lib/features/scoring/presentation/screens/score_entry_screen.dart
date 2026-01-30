@@ -176,7 +176,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
               children: [
                 Text(
                   '♥',
-                  style: TextStyle(
+                  style: GoogleFonts.rubik(
                     color: areCardsDisabled
                         ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
                         : Theme.of(context).colorScheme.primary,
@@ -188,8 +188,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                 Expanded(
                   child: Text(
                     'قطع الهاص',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -208,7 +207,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                   ),
                   child: Text(
                     '$hash',
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -275,7 +274,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                       child: Center(
                         child: Text(
                           '${index + 1}',
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: isSelected 
                                 ? Colors.white 
                                 : Theme.of(context).textTheme.bodyLarge?.color,
@@ -316,7 +315,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                       child: Center(
                         child: Text(
                           'دبل',
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: isHeartsDoubled
                                 ? Colors.white
                                 : Theme.of(context).colorScheme.primary,
@@ -360,7 +359,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                       child: Center(
                         child: Text(
                           selectedHearts.length == 13 ? 'إلغاء الكل' : 'تحديد الكل',
-                          style: TextStyle(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -443,7 +442,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                 children: [
                   Text(
                     icon,
-                    style: TextStyle(
+                    style: GoogleFonts.rubik(
                       color: isDisabled 
                           ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
                           : Theme.of(context).colorScheme.primary,
@@ -455,8 +454,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                   Expanded(
                     child: Text(
                       title,
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -481,8 +479,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                   alignment: Alignment.center,
                   child: Text(
                     '$currentVal',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),

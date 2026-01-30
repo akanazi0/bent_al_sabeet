@@ -171,9 +171,25 @@ class MyApp extends StatelessWidget {
       platform: TargetPlatform.android,
       // Standardize density across Web, Desktop, and Mobile
       visualDensity: VisualDensity.standard,
-      fontFamily: 'Rubik', // Global font family
+      fontFamily: GoogleFonts.rubik().fontFamily, // Global font family from GoogleFonts
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF131416),
+      
+      // Ensure Cupertino widgets also use the same design language
+      cupertinoOverrideTheme: CupertinoThemeData(
+        brightness: Brightness.dark,
+        primaryColor: const Color(0xFF3574F0),
+        textTheme: CupertinoTextThemeData(
+          primaryColor: Colors.white,
+          textStyle: GoogleFonts.rubik(color: const Color(0xFFA9B7C6)),
+          actionTextStyle: GoogleFonts.rubik(color: const Color(0xFF3574F0)),
+          navActionTextStyle: GoogleFonts.rubik(color: const Color(0xFF3574F0)),
+          navTitleTextStyle: GoogleFonts.rubik(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       
       // Color scheme
       colorScheme: const ColorScheme.dark(
