@@ -44,6 +44,21 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+    
+    // Add listeners to controllers to refresh UI on text entry
+    for (var controller in controllers) {
+      controller.addListener(() {
+        if (mounted) setState(() {});
+      });
+    }
+  }
+
+  bool _isFormValid() {
+    // Check if all visible names are filled
+    for (int i = 0; i < playerCount; i++) {
+      if (controllers[i].text.trim().isEmpty) return false;
+    }
+    return true;
   }
 
   @override
@@ -270,34 +285,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 54,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3574F0),
-                    foregroundColor: Colors.white,
+                    backgroundColor: _isFormValid() ? const Color(0xFF3574F0) : Colors.grey.withOpacity(0.3),
+                    foregroundColor: _isFormValid() ? Colors.white : Colors.white.withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () {
-                    // Get names and auto-fill empty ones with defaults
-
+                  onPressed: _isFormValid() ? () {
                     final names = controllers
                         .take(playerCount)
                         .map((c) => c.text.trim())
                         .toList();
                     
-                    // Auto-fill empty names
-                    for (int i = 0; i < names.length; i++) {
-                      if (names[i].isEmpty) {
-                        names[i] = 'اللاعب ${i + 1}';
-                      }
-                    }
                     context.read<GameProvider>().startNewGame(names, pointsLimit);
                     
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => const DashboardScreen()),
                     );
-                  },
+                  } : null,
                   child: Text(
                     'بدء الجلسة',
                     style: Theme.of(context).textTheme.labelLarge,

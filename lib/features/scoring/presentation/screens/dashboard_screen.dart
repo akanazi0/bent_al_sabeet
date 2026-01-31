@@ -132,11 +132,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(p.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20, height: 1.0)),
+                                padding: const EdgeInsets.only(top: 8.0, horizontal: 4.0),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(p.name,
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20, height: 1.1)),
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Padding(

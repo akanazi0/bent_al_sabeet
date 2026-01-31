@@ -378,7 +378,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   child: TextField(
                     controller: _controllers[i],
                     focusNode: _focusNodes[i],
-                    keyboardType: const TextInputType.numberWithOptions(signed: true),
+                    keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     textAlignVertical: TextAlignVertical.center, // Center text vertically
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
