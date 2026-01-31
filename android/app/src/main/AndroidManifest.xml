@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="bent_al_sabeet"
+        android:label="حاسبة بنت السبيت"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

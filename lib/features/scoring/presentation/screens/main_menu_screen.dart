@@ -55,7 +55,7 @@ class MainMenuScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Title
                 Text(
-                  'حساب بنت السبيت',
+                  'حاسبة بنت السبيت',
                   style: Theme.of(context).textTheme.displayLarge,
                 ),
                 const SizedBox(height: 40),

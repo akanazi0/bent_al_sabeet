@@ -266,7 +266,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       children: [
                                         const Text('انتهت اللعبة', 
                                           textAlign: TextAlign.center, 
-                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Rubik')
+                                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)
                                         ),
                                         const SizedBox(height: 24),
                                         
