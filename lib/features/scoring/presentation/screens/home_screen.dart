@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
+import '../utils/number_utils.dart';
+import '../widgets/keyboard_action_bar.dart';
 import 'dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -119,6 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: TextField(
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
+                            textInputAction: TextInputAction.next,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩]')),
+                            ],
+                            onSubmitted: (_) {
+                              if (focusNodes[0].canRequestFocus) {
+                                focusNodes[0].requestFocus();
+                              }
+                            },
                             decoration: InputDecoration(
                               hintText: '152',
                               contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Centered vertically
@@ -153,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (value.isEmpty) {
                                   pointsLimit = 152; 
                                 } else {
-                                  final limit = int.tryParse(value);
+                                  final limit = NumberUtils.tryParseInt(value);
                                   if (limit != null && limit > 0) {
                                     pointsLimit = limit;
                                   }
@@ -275,6 +287,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+      ),
+      bottomSheet: KeyboardActionBar(
+        onNext: () {
+          FocusScope.of(context).nextFocus();
+        },
+        onDone: () {
+          FocusScope.of(context).unfocus();
+        },
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
+import '../utils/number_utils.dart';
+import '../widgets/keyboard_action_bar.dart';
 import 'score_entry_screen.dart';
 
 class PlayerSelectionScreen extends StatefulWidget {
@@ -56,7 +58,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
     if (value.trim().isEmpty) {
       game.addManualScore(0);
     } else {
-      final score = int.tryParse(value.trim());
+      final score = NumberUtils.tryParseInt(value.trim());
       if (score != null) {
         game.addManualScore(score);
       }
@@ -324,6 +326,16 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
         ],
         ),
       ),
+      bottomSheet: game.scoringMode == ScoringMode.manual 
+        ? KeyboardActionBar(
+            onNext: () {
+              FocusScope.of(context).nextFocus();
+            },
+            onDone: () {
+              FocusScope.of(context).unfocus();
+            },
+          )
+        : null,
     );
   }
 
@@ -368,9 +380,10 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   child: TextField(
                     controller: _controllers[i],
                     focusNode: _focusNodes[i],
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(signed: true),
+                    textInputAction: i < players.length - 1 ? TextInputAction.next : TextInputAction.done,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^-?\d*')),
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩\-]')),
                     ],
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -400,6 +413,8 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                       // Move to next player if available
                       if (i + 1 < players.length && _focusNodes.containsKey(i + 1)) {
                         _focusNodes[i + 1]!.requestFocus();
+                      } else {
+                        _focusNodes[i]?.unfocus();
                       }
                     },
                   ),
