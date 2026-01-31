@@ -315,6 +315,10 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                       );
                       if (should == true) {
                         game.clearPendingScores();
+                        // Also clear local text controllers to keep UI in sync
+                        for (var controller in _controllers.values) {
+                          controller.clear();
+                        }
                       }
                     } : null,
                     child: Icon(Icons.refresh, color: game.currentRoundProgress > 0 ? Theme.of(context).textTheme.bodyLarge?.color : Theme.of(context).dividerColor, size: 20),
