@@ -48,7 +48,7 @@ class MainMenuScreen extends StatelessWidget {
                     ],
                   ),
                   child: Image.asset(
-                    'assets/images/logo02.png',
+                    'assets/icon.png',
                     width: 260,
                   ),
                 ),
