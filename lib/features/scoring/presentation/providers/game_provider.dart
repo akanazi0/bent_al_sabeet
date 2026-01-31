@@ -289,8 +289,15 @@ class GameProvider extends ChangeNotifier {
       int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
       int maxScore = players!.map((p) => p.totalScore).reduce((a, b) => a > b ? a : b);
       
-      List<Player> winners = players!.where((p) => p.totalScore == minScore).toList();
       List<Player> losers = players!.where((p) => p.totalScore == maxScore).toList();
+      List<Player> winners = players!.where((p) => p.totalScore < maxScore).toList();
+      
+      // Special case: if everyone tied, everyone can be a loser/winner depending on perspective,
+      // but usually we just want to show the results.
+      if (winners.isEmpty && losers.isNotEmpty) {
+        // If everyone has the same max score, they all lost.
+        // We can keep winners empty or show everyone.
+      }
       
       return {'winners': winners, 'losers': losers};
     }

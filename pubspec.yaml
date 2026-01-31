@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   provider: ^6.1.5+1
-  google_fonts: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -40,8 +39,6 @@ flutter:
     - assets/fonts/
 
   fonts:
-    - family: Carlito
+    - family: AHManal
       fonts:
-        - asset: assets/fonts/Carlito-Regular.ttf
-        - asset: assets/fonts/Carlito-Bold.ttf
-          weight: 700
+        - asset: assets/fonts/ah-manal-bold.ttf

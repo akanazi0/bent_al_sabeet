@@ -127,7 +127,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                               ? Colors.white
                               : const Color(0xFFA9B7C6),
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -154,7 +154,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                               ? Colors.white
                               : const Color(0xFFA9B7C6),
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -236,7 +236,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                                       errors.join('\n\n'),
                                       textAlign: TextAlign.right,
                                       style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
-                                        fontSize: 16,
+                                        fontSize: 20,
                                       ),
                                     ),
                                     actions: [
@@ -255,7 +255,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                             }
                           : null,
                       child: Text('تسجيل', 
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)),
                     ),
                   ),
                 ),
@@ -328,9 +328,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
       ),
       bottomSheet: game.scoringMode == ScoringMode.manual 
         ? KeyboardActionBar(
-            onNext: () {
-              FocusScope.of(context).nextFocus();
-            },
+            showNext: false,
             onDone: () {
               FocusScope.of(context).unfocus();
             },
@@ -369,7 +367,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                 child: Text(
                   p.name,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize: 16,
+                    fontSize: 20,
                     color: const Color(0xFFA9B7C6),
                   ),
                 ),
@@ -381,20 +379,15 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                     controller: _controllers[i],
                     focusNode: _focusNodes[i],
                     keyboardType: const TextInputType.numberWithOptions(signed: true),
-                    textInputAction: i < players.length - 1 ? TextInputAction.next : TextInputAction.done,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩\-]')),
-                    ],
                     textAlign: TextAlign.center,
+                    textAlignVertical: TextAlignVertical.center, // Center text vertically
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
                       color: const Color(0xFF3574F0),
                     ),
                     decoration: InputDecoration(
                       hintText: '0',
                       hintStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
                       ),
@@ -404,8 +397,8 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                         borderRadius: BorderRadius.circular(6),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      isDense: true,
+                      contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0), // Push text down
+                       isDense: true,
                     ),
                     onChanged: (value) => _updateScore(i, value),
                     onSubmitted: (value) {
@@ -461,7 +454,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(p.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18, color: const Color(0xFFA9B7C6))),
+                Text(p.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 22, color: const Color(0xFFA9B7C6))), // 18 -> 22
                 if (hasScoredThisRound)
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
@@ -469,7 +462,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: const Color(0xFF3574F0), 
                         fontWeight: FontWeight.bold, 
-                        fontSize: 20
+                        fontSize: 24,
                       )),
                   ),
               ],

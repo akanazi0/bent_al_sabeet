@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../providers/game_provider.dart';
 
 class ScoreEntryScreen extends StatefulWidget {
@@ -209,11 +208,11 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
               children: [
                 Text(
                   '♥',
-                  style: GoogleFonts.rubik(
+                  style: TextStyle(
                     color: areCardsDisabled
                         ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
                         : Theme.of(context).colorScheme.primary,
-                    fontSize: 24,
+                    fontSize: 30,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -222,7 +221,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                   child: Text(
                     'قطع الهاص',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: 15,
+                      fontSize: 19,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -242,7 +241,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                     '${hash(game)}',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
-                      fontSize: 18,
+                      fontSize: 22, // 18 -> 22
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -310,16 +309,20 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                             : null,
                       ),
                       child: Center(
-                        child: Text(
-                          '${index + 1}',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: isClosed 
-                                ? Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.2)
-                                : isSelected 
-                                    ? Colors.white 
-                                    : Theme.of(context).textTheme.bodyLarge?.color,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 6.0), // Nudge text down for better centering
+                          child: Text(
+                            '${index + 1}',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: isClosed 
+                                  ? Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.2)
+                                  : isSelected 
+                                      ? Colors.white 
+                                      : Theme.of(context).textTheme.bodyLarge?.color,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              height: 1.0, // Control height for tighter centering
+                            ),
                           ),
                         ),
                       ),
@@ -357,7 +360,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                             color: game.isHeartsDoubled
                                 ? Colors.white
                                 : Theme.of(context).colorScheme.primary,
-                            fontSize: 15,
+                            fontSize: 19,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -401,7 +404,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                           selectedHearts.length == availableCount ? 'إلغاء الكل' : 'تحديد الكل',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
-                            fontSize: 15,
+                            fontSize: 19,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -489,11 +492,11 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                 children: [
                   Text(
                     icon,
-                    style: GoogleFonts.rubik(
+                    style: TextStyle(
                       color: isDisabled 
                           ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
                           : Theme.of(context).colorScheme.primary,
-                      fontSize: 24,
+                      fontSize: 28, // 24 -> 28
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -502,7 +505,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: 15,
+                        fontSize: 19,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -524,11 +527,17 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                 Container(
                   width: 60,
                   alignment: Alignment.center,
-                  child: Text(
-                    '$currentVal',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6.0), // Nudge text down
+                      child: Text(
+                        '$currentVal',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          height: 1.0,
+                        ),
+                      ),
                     ),
                   ),
                 ),

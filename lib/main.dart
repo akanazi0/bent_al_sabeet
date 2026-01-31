@@ -61,29 +61,31 @@ class MyApp extends StatelessWidget {
   }
 
   ThemeData _buildDarkTheme() {
-    // Define all text styles explicitly with Carlito font (Calibri alternative, local asset)
-    // Using local font files ensures consistent rendering across all platforms including iOS
-    const fontFamily = 'Carlito';
+    // AH Manal Bold is the exclusive font for this application
+    const fontFamily = 'AHManal';
     final baseTextTheme = ThemeData.dark().textTheme;
     
     final textTheme = baseTextTheme.copyWith(
       // Display styles (large titles)
       displayLarge: baseTextTheme.displayLarge?.copyWith(
-        fontSize: 32,
+        fontFamily: fontFamily,
+        fontSize: 38, // 32 -> 38
         fontWeight: FontWeight.w900,
         color: Colors.white,
         letterSpacing: -0.5,
         height: 1.2,
       ),
       displayMedium: baseTextTheme.displayMedium?.copyWith(
-        fontSize: 28,
+        fontFamily: fontFamily,
+        fontSize: 34, // 28 -> 34
         fontWeight: FontWeight.w700,
         color: Colors.white,
         letterSpacing: -0.5,
         height: 1.2,
       ),
       displaySmall: baseTextTheme.displaySmall?.copyWith(
-        fontSize: 24,
+        fontFamily: fontFamily,
+        fontSize: 30, // 24 -> 30
         fontWeight: FontWeight.w600,
         color: Colors.white,
         letterSpacing: 0,
@@ -91,21 +93,24 @@ class MyApp extends StatelessWidget {
       ),
       // Headline styles
       headlineLarge: baseTextTheme.headlineLarge?.copyWith(
-        fontSize: 20,
+        fontFamily: fontFamily,
+        fontSize: 26, // 20 -> 26
         fontWeight: FontWeight.w700,
         color: Colors.white,
         letterSpacing: 0,
         height: 1.3,
       ),
       headlineMedium: baseTextTheme.headlineMedium?.copyWith(
-        fontSize: 18,
+        fontFamily: fontFamily,
+        fontSize: 24, // 18 -> 24
         fontWeight: FontWeight.w600,
         color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.3,
       ),
       headlineSmall: baseTextTheme.headlineSmall?.copyWith(
-        fontSize: 16,
+        fontFamily: fontFamily,
+        fontSize: 22, // 16 -> 22
         fontWeight: FontWeight.w600,
         color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
@@ -113,21 +118,24 @@ class MyApp extends StatelessWidget {
       ),
       // Title styles
       titleLarge: baseTextTheme.titleLarge?.copyWith(
-        fontSize: 18,
+        fontFamily: fontFamily,
+        fontSize: 24, // 18 -> 24
         fontWeight: FontWeight.w700,
         color: Colors.white,
         letterSpacing: 0,
         height: 1.3,
       ),
       titleMedium: baseTextTheme.titleMedium?.copyWith(
-        fontSize: 16,
+        fontFamily: fontFamily,
+        fontSize: 22, // 16 -> 22
         fontWeight: FontWeight.w600,
         color: Colors.white,
         letterSpacing: 0,
         height: 1.3,
       ),
       titleSmall: baseTextTheme.titleSmall?.copyWith(
-        fontSize: 14,
+        fontFamily: fontFamily,
+        fontSize: 20, // 14 -> 20
         fontWeight: FontWeight.w600,
         color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
@@ -135,21 +143,24 @@ class MyApp extends StatelessWidget {
       ),
       // Body styles (most common)
       bodyLarge: baseTextTheme.bodyLarge?.copyWith(
-        fontSize: 16,
+        fontFamily: fontFamily,
+        fontSize: 20, // 16 -> 20
         fontWeight: FontWeight.w400,
         color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.5,
       ),
       bodyMedium: baseTextTheme.bodyMedium?.copyWith(
-        fontSize: 14,
+        fontFamily: fontFamily,
+        fontSize: 18, // 14 -> 18
         fontWeight: FontWeight.w400,
         color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
         height: 1.5,
       ),
       bodySmall: baseTextTheme.bodySmall?.copyWith(
-        fontSize: 12,
+        fontFamily: fontFamily,
+        fontSize: 16, // 12 -> 16
         fontWeight: FontWeight.w400,
         color: const Color(0xFFA9B7C6),
         letterSpacing: 0,
@@ -157,7 +168,8 @@ class MyApp extends StatelessWidget {
       ),
       // Label styles (buttons, chips)
       labelLarge: baseTextTheme.labelLarge?.copyWith(
-        fontSize: 18,
+        fontFamily: fontFamily,
+        fontSize: 22, // 18 -> 22
         fontWeight: FontWeight.w600,
         color: Colors.white,
         letterSpacing: 0.5,
@@ -171,7 +183,7 @@ class MyApp extends StatelessWidget {
       platform: TargetPlatform.android,
       // Standardize density across Web, Desktop, and Mobile
       visualDensity: VisualDensity.standard,
-      fontFamily: fontFamily, // Global font family from GoogleFonts
+      fontFamily: fontFamily,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF131416),
       
@@ -234,7 +246,7 @@ class MyApp extends StatelessWidget {
         centerTitle: true,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         titleTextStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 18,
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
@@ -256,7 +268,7 @@ class MyApp extends StatelessWidget {
           ),
           elevation: 0,
           textStyle: TextStyle(fontFamily: fontFamily, 
-            fontSize: 18,
+            fontSize: 22,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),
@@ -268,7 +280,7 @@ class MyApp extends StatelessWidget {
         style: TextButton.styleFrom(
           foregroundColor: const Color(0xFF3574F0),
           textStyle: TextStyle(fontFamily: fontFamily, 
-            fontSize: 14,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: 0,
           ),
@@ -284,7 +296,7 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           textStyle: TextStyle(fontFamily: fontFamily, 
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
           ),
@@ -299,13 +311,13 @@ class MyApp extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
         titleTextStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 16,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: 0,
         ),
         contentTextStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 14,
+          fontSize: 18,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
@@ -334,25 +346,25 @@ class MyApp extends StatelessWidget {
           borderSide: const BorderSide(color: Colors.redAccent),
         ),
         labelStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 14,
+          fontSize: 18,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
         hintStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 14,
+          fontSize: 18,
           fontWeight: FontWeight.w400,
           color: const Color(0xFF6B7280),
           letterSpacing: 0,
         ),
         helperStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 12,
+          fontSize: 16,
           fontWeight: FontWeight.w400,
           color: const Color(0xFFA9B7C6),
           letterSpacing: 0,
         ),
         errorStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 12,
+          fontSize: 16,
           fontWeight: FontWeight.w400,
           color: Colors.redAccent,
           letterSpacing: 0,
@@ -365,12 +377,12 @@ class MyApp extends StatelessWidget {
         selectedColor: const Color(0xFF3574F0),
         disabledColor: const Color(0xFF2B2B2B).withOpacity(0.5),
         labelStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 14,
+          fontSize: 18,
           fontWeight: FontWeight.w500,
           letterSpacing: 0,
         ),
         secondaryLabelStyle: TextStyle(fontFamily: fontFamily, 
-          fontSize: 14,
+          fontSize: 18,
           fontWeight: FontWeight.w500,
           color: Colors.white,
           letterSpacing: 0,

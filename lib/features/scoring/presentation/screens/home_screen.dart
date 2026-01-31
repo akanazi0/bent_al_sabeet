@@ -27,7 +27,23 @@ class _HomeScreenState extends State<HomeScreen> {
     for (var node in focusNodes) {
       node.dispose();
     }
+    pointsLimitFocusNode.dispose();
     super.dispose();
+  }
+
+  final FocusNode pointsLimitFocusNode = FocusNode();
+  bool _isPointsLimitFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    pointsLimitFocusNode.addListener(() {
+      if (mounted) {
+        setState(() {
+          _isPointsLimitFocused = pointsLimitFocusNode.hasFocus;
+        });
+      }
+    });
   }
 
   @override
@@ -72,7 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           spacing: 8.0,
                           children: [4, 5].map((count) => ChoiceChip(
                             showCheckmark: false, // Removed checkmark
-                            label: Text('$count', style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16)),
+                            label: Padding(
+                              padding: const EdgeInsets.only(top: 4.0), // Nudge down for better centering
+                              child: Text('$count', style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20)),
+                            ),
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             selected: playerCount == count,
                             onSelected: (selected) {
@@ -120,20 +139,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 80, 
                           height: 48, // Fixed height to match chips approximately
                           child: TextField(
+                            focusNode: pointsLimitFocusNode,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
-                            textInputAction: TextInputAction.next,
+                            textAlignVertical: TextAlignVertical.center, // Force vertical centering
+                            textInputAction: TextInputAction.done,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩]')),
                             ],
                             onSubmitted: (_) {
-                              if (focusNodes[0].canRequestFocus) {
-                                focusNodes[0].requestFocus();
-                              }
+                              // Just close keyboard for numeric limit
+                              pointsLimitFocusNode.unfocus();
                             },
                             decoration: InputDecoration(
                               hintText: '152',
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Centered vertically
+                              contentPadding: const EdgeInsets.fromLTRB(8, 6, 8, 0), // Push text down
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8), // Matching radius
                                 borderSide: BorderSide(
@@ -157,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontSize: 16, // Matching font size
+                              fontSize: 20, // Matching font size
                               fontWeight: FontWeight.w600,
                             ),
                             onChanged: (value) {
@@ -206,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
                       },
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.w500,
                       ),
                       decoration: InputDecoration(
@@ -216,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
                         ),
                         labelStyle: Theme.of(context).inputDecorationTheme.labelStyle?.copyWith(
-                          fontSize: 14,
+                          fontSize: 18,
                         ),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
@@ -289,6 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomSheet: KeyboardActionBar(
+        showNext: !_isPointsLimitFocused,
         onNext: () {
           FocusScope.of(context).nextFocus();
         },

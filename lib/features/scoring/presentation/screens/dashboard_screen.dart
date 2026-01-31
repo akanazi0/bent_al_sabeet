@@ -94,7 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               }
             },
           ),
-          title: Text('بنت السبيت',
+          title: Text('حاسبة بنت السبيت',
               style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -131,15 +131,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(p.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16)),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(p.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20, height: 1.0)),
+                              ),
                               const SizedBox(height: 4),
-                              Text('${p.totalScore}',
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Padding(
+                                 padding: const EdgeInsets.only(top: 6.0),
+                                child: Text('${p.totalScore}',
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.0,
+                                    )),
+                              ),
 
-                              if (p.isDealer) Text('الموزع', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent, fontSize: 16)),
+                              if (p.isDealer) Padding(
+                                padding: const EdgeInsets.only(top: 6.0),
+                                child: Text('الموزع', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent, fontSize: 20, height: 1.0)),
+                              ),
                               const SizedBox(height: 8),
                             ],
                           ),
@@ -207,7 +220,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     : null,
                               ),
                                 child: Center(
-                                  child: Text(text, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
+                                  child: Text(text, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  )),
                                 ),
                             );
                           }),
@@ -275,28 +290,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.redAccent, fontWeight: FontWeight.bold)
                                         ),
                                         const SizedBox(height: 8),
-                                          ...losers.map((p) => Text(
-                                            '${p.name} (${p.totalScore})',
-                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                          ...losers.map((p) {
+                                            final style = Theme.of(context).textTheme.titleLarge?.copyWith(
                                               fontSize: 20, 
                                               fontWeight: FontWeight.w600,
-                                            ),
-                                          )),
-                                          
-                                          const Divider(height: 32),
+                                            );
+                                            return Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 60,
+                                                  child: Text('${p.totalScore}', textAlign: TextAlign.center, style: style),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                  child: Text('|', style: style),
+                                                ),
+                                                SizedBox(
+                                                  width: 120,
+                                                  child: Text(p.name, textAlign: TextAlign.center, style: style, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                                ),
+                                              ],
+                                            );
+                                          }),
                                           
                                           // Winners section
-                                          Text('نقاط اللعبة', 
-                                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.bold)
-                                          ),
-                                          const SizedBox(height: 8),
-                                          ...winners.map((p) => Text(
-                                            '${p.name} (${p.totalScore})',
-                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                              fontSize: 20, 
-                                              fontWeight: FontWeight.w600,
+                                          if (winners.isNotEmpty) ...[
+                                            const Divider(height: 32),
+                                            Text('نقاط اللعبة', 
+                                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.green, fontWeight: FontWeight.bold)
                                             ),
-                                          )),
+                                            const SizedBox(height: 8),
+                                            ...winners.map((p) {
+                                              final style = Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                fontSize: 20, 
+                                                fontWeight: FontWeight.w600,
+                                              );
+                                              return Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 60,
+                                                    child: Text('${p.totalScore}', textAlign: TextAlign.center, style: style),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                    child: Text('|', style: style),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 120,
+                                                    child: Text(p.name, textAlign: TextAlign.center, style: style, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                                  ),
+                                                ],
+                                              );
+                                            }),
+                                          ],
                                           
                                           const SizedBox(height: 32),
                                           SizedBox(

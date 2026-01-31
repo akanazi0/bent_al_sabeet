@@ -22,53 +22,61 @@ class KeyboardActionBar extends StatelessWidget {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     if (keyboardHeight == 0) return const SizedBox.shrink();
 
-    return Container(
-      width: double.infinity,
-      height: 44,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          top: BorderSide(color: Theme.of(context).dividerColor, width: 0.5),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: double.infinity,
+        height: 48,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(
+            top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (showNext && onNext != null)
-            TextButton(
-              onPressed: onNext,
-              child: Text(
-                'التالي',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Carlito',
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (showNext && onNext != null)
+              TextButton(
+                onPressed: onNext,
+                child: Text(
+                  'التالي',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20, // 16 -> 20
+                  ),
                 ),
               ),
-            ),
-          if (showNext && showDone)
-            const VerticalDivider(width: 1, indent: 12, endIndent: 12),
-          if (showDone && onDone != null)
-            TextButton(
-              onPressed: onDone,
-              child: Text(
-                'تم',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Carlito',
+            if (showNext && showDone && onNext != null && onDone != null)
+              VerticalDivider(
+                width: 20, 
+                indent: 14, 
+                endIndent: 14, 
+                color: Theme.of(context).dividerColor,
+              ),
+            if (showDone && onDone != null)
+              TextButton(
+                onPressed: onDone,
+                child: Text(
+                  'تم',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20, // 16 -> 20
+                  ),
                 ),
               ),
-            ),
-          const SizedBox(width: 12),
-        ],
+            const SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }
