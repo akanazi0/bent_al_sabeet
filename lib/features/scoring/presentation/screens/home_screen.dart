@@ -285,26 +285,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 54,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isFormValid() ? const Color(0xFF3574F0) : Colors.grey.withOpacity(0.3),
-                    foregroundColor: _isFormValid() ? Colors.white : Colors.white.withOpacity(0.5),
+                    backgroundColor: const Color(0xFF3574F0),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 0,
                   ),
-                  onPressed: _isFormValid() ? () {
+                  onPressed: () {
                     final names = controllers
                         .take(playerCount)
                         .map((c) => c.text.trim())
                         .toList();
                     
+                    // Auto-fill empty names
+                    for (int i = 0; i < names.length; i++) {
+                      if (names[i].isEmpty) {
+                        names[i] = 'اللاعب ${i + 1}';
+                      }
+                    }
+
                     context.read<GameProvider>().startNewGame(names, pointsLimit);
                     
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => const DashboardScreen()),
                     );
-                  } : null,
+                  },
                   child: Text(
                     'بدء الجلسة',
                     style: Theme.of(context).textTheme.labelLarge,
