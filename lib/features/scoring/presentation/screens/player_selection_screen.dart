@@ -332,7 +332,6 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
       ),
       bottomSheet: game.scoringMode == ScoringMode.manual 
         ? KeyboardActionBar(
-            showNext: false,
             onDone: () {
               FocusScope.of(context).unfocus();
             },
@@ -385,6 +384,9 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     textAlignVertical: TextAlignVertical.center, // Center text vertically
+                    textInputAction: TextInputAction.done,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: const Color(0xFF3574F0),
                     ),

@@ -32,18 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final FocusNode pointsLimitFocusNode = FocusNode();
-  bool _isPointsLimitFocused = false;
 
   @override
   void initState() {
     super.initState();
-    pointsLimitFocusNode.addListener(() {
-      if (mounted) {
-        setState(() {
-          _isPointsLimitFocused = pointsLimitFocusNode.hasFocus;
-        });
-      }
-    });
     
     // Add listeners to controllers to refresh UI on text entry
     for (var controller in controllers) {
@@ -51,14 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) setState(() {});
       });
     }
-  }
-
-  bool _isFormValid() {
-    // Check if all visible names are filled
-    for (int i = 0; i < playerCount; i++) {
-      if (controllers[i].text.trim().isEmpty) return false;
-    }
-    return true;
   }
 
   @override
@@ -159,6 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             textAlign: TextAlign.center,
                             textAlignVertical: TextAlignVertical.center, // Force vertical centering
                             textInputAction: TextInputAction.done,
+                            autocorrect: false,
+                            enableSuggestions: false,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩]')),
                             ],
@@ -231,14 +217,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       controller: controllers[i],
                       focusNode: focusNodes[i],
-                      textInputAction: i < playerCount - 1 ? TextInputAction.next : TextInputAction.done,
+                      textInputAction: TextInputAction.done,
+                      autocorrect: false,
+                      enableSuggestions: false,
                       onSubmitted: (_) {
-                        // Move to next field or unfocus
-                        if (i < playerCount - 1) {
-                          focusNodes[i + 1].requestFocus();
-                        } else {
-                          focusNodes[i].unfocus();
-                        }
+                        focusNodes[i].unfocus();
                       },
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 22,
@@ -323,12 +306,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomSheet: KeyboardActionBar(
-        showNext: !_isPointsLimitFocused,
-        onNext: () {
-          FocusScope.of(context).nextFocus();
-        },
         onDone: () {
-          FocusScope.of(context).unfocus();
+          pointsLimitFocusNode.unfocus();
+          for (var node in focusNodes) {
+            node.unfocus();
+          }
         },
       ),
     );
