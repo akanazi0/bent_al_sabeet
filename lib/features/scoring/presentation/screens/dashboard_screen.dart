@@ -132,7 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(top: 8.0, horizontal: 4.0),
+                                padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(p.name,
