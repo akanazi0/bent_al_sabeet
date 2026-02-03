@@ -75,7 +75,10 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
         : 0;
     int currentRoundNumber = minScores + 1;
 
+    final double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false, // حذف زر الرجوع العلوي
@@ -93,257 +96,295 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
           )),
       ),
       body: SafeArea(
-        child: Column(
-        children: [
-          // Mode switch
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2B2B2B),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF3E3E3E)),
-            ),
-            child: Row(
+        child: Stack(
+          children: [
+            Column(
               children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      context.read<GameProvider>().setScoringMode(ScoringMode.card);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: game.scoringMode == ScoringMode.card
-                            ? const Color(0xFF3574F0)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'وضع البطاقات',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: game.scoringMode == ScoringMode.card
-                              ? Colors.white
-                              : const Color(0xFFA9B7C6),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
+                // Mode switch
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2B2B2B),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF3E3E3E)),
                   ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      context.read<GameProvider>().setScoringMode(ScoringMode.manual);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: game.scoringMode == ScoringMode.manual
-                            ? const Color(0xFF3574F0)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'وضع يدوي',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: game.scoringMode == ScoringMode.manual
-                              ? Colors.white
-                              : const Color(0xFFA9B7C6),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: game.scoringMode == ScoringMode.manual
-                ? _buildManualModeList(game, players)
-                : _buildCardModeGrid(game, players),
-          ),
-          const SizedBox(height: 16),
-          // الزر الأزرق المطلوب في الأسفل - يظهر دائماً، مفعل فقط عند إكمال الجولة
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 54,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3574F0), // اللون الأزرق
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        elevation: 0,
-                      ),
-                      onPressed: game.currentRoundProgress == players.length
-                          ? () {
-                              final List<String> errors = [];
-                              
-                              // Check if all players have zero scores
-                              bool allZero = true;
-                              for (int i = 0; i < players.length; i++) {
-                                final tot = game.pendingScoreForPlayer(i) ?? 0;
-                                if (tot != 0) {
-                                  allZero = false;
-                                  break;
-                                }
-                              }
-                              if (allZero) {
-                                errors.add('لا يمكن تسجيل جولة صفرية\nيرجى إدخال نقاط لكل لاعب');
-                              }
-                              
-                              // Only validate card-specific rules in card mode
-                              if (game.scoringMode == ScoringMode.card && !allZero) {
-                                int sibeetaCount = 0;
-                                int demanCount = 0;
-                                int totalHash = 0;
-                                for (int i = 0; i < players.length; i++) {
-                                  final comps = game.pendingComponentsForPlayer(i) ?? {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
-                                  if ((comps['sibeeta'] as num? ?? 0).toInt() > 0) sibeetaCount++;
-                                  if ((comps['deman'] as num? ?? 0).toInt() > 0) demanCount++;
-                                  totalHash += (comps['hash'] as num? ?? 0).toInt();
-                                }
-                                
-                                // Require exactly one queen and exactly one 10-diamond.
-                                if (sibeetaCount != 1) {
-                                  errors.add('يجب ان يمتلك لاعب واحد بطاقة بنت السبيت\nيرجى التحقق من هو صاحب البطاقة');
-                                }
-                                if (demanCount != 1) {
-                                  errors.add('يجب ان يمتلك لاعب واحد بطاقة عشرة الديمن\nيرجى التحقق من هو صاحب البطاقة');
-                                }
-
-                                // Hearts total must be exactly 13 or 26 across all players.
-                                if (!(totalHash == 13 || totalHash == 26)) {
-                                  errors.add('مجموع نقاط الهاص يجب ان يكون 13 او 26 نقطة فقط\nالمجموع الحالي: $totalHash');
-                                }
-                              }
-
-                              if (errors.isNotEmpty) {
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    backgroundColor: Theme.of(context).colorScheme.surface,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                    content: Text(
-                                      errors.join('\n\n'),
-                                      textAlign: TextAlign.right,
-                                      style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(ctx).pop(),
-                                        child: Text('حسنا', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
-                                      )
-                                    ],
-                                  ),
-                                );
-                                return;
-                              }
-
-                              game.finalizeRound();
-                              Navigator.pop(context); // العودة للداشبورد يدوياً
-                            }
-                          : null,
-                      child: Text('تسجيل', 
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                SizedBox(
-                  height: 54,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Theme.of(context).dividerColor),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    onPressed: game.currentRoundProgress > 0 ? () async {
-                      final should = await showDialog<bool>(
-                        context: context,
-                        builder: (c) => Dialog(
-                          backgroundColor: Colors.transparent,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            context.read<GameProvider>().setScoringMode(ScoringMode.card);
+                          },
                           child: Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.symmetric(horizontal: 24),
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(20),
+                              color: game.scoringMode == ScoringMode.card
+                                  ? const Color(0xFF3574F0)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('هل أنت متأكد من إعادة التعيين ؟',
-                                    textAlign: TextAlign.right,
-                                    style: Theme.of(context).dialogTheme.titleTextStyle),
-                                const SizedBox(height: 12),
-                                Text('سيتم حذف جميع النقاط المدخلة في هذه الجولة. هل تريد المتابعة ؟',
-                                    textAlign: TextAlign.right,
-                                    style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
-                                      color: const Color.fromARGB(255, 255, 82, 82),
-                                    )),
-                                const SizedBox(height: 18),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(c).pop(false),
-                                      child: Text('لا', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    TextButton(
-                                      onPressed: () => Navigator.of(c).pop(true),
-                                      child: Text('نعم', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent)),
-                                    ),
-                                  ],
-                                )
-                              ],
+                            child: Text(
+                              'وضع البطاقات',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: game.scoringMode == ScoringMode.card
+                                    ? Colors.white
+                                    : const Color(0xFFA9B7C6),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
                         ),
-                      );
-                      if (should == true) {
-                        game.clearPendingScores();
-                        // Also clear local text controllers to keep UI in sync
-                        for (var controller in _controllers.values) {
-                          controller.clear();
-                        }
-                      }
-                    } : null,
-                    child: Icon(Icons.refresh, color: game.currentRoundProgress > 0 ? Theme.of(context).textTheme.bodyLarge?.color : Theme.of(context).dividerColor, size: 20),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            context.read<GameProvider>().setScoringMode(ScoringMode.manual);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: game.scoringMode == ScoringMode.manual
+                                  ? const Color(0xFF3574F0)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'وضع يدوي',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: game.scoringMode == ScoringMode.manual
+                                    ? Colors.white
+                                    : const Color(0xFFA9B7C6),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+                Expanded(
+                  child: game.scoringMode == ScoringMode.manual
+                      ? _buildManualModeList(game, players, keyboardHeight)
+                      : _buildCardModeGrid(game, players, keyboardHeight),
                 ),
               ],
             ),
-          ),
-        ],
+            
+            // Fixed bottom buttons
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 12,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 54,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3574F0), // اللون الأزرق
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          elevation: 0,
+                        ),
+                        onPressed: game.currentRoundProgress == players.length
+                            ? () {
+                                final List<String> errors = [];
+                                
+                                // Check if all players have zero scores
+                                bool allZero = true;
+                                for (int i = 0; i < players.length; i++) {
+                                  final tot = game.pendingScoreForPlayer(i) ?? 0;
+                                  if (tot != 0) {
+                                    allZero = false;
+                                    break;
+                                  }
+                                }
+                                if (allZero) {
+                                  errors.add('لا يمكن تسجيل جولة صفرية\nيرجى إدخال نقاط لكل لاعب');
+                                }
+                                
+                                // Only validate card-specific rules in card mode
+                                if (game.scoringMode == ScoringMode.card && !allZero) {
+                                  int sibeetaCount = 0;
+                                  int demanCount = 0;
+                                  int totalHash = 0;
+                                  for (int i = 0; i < players.length; i++) {
+                                    final comps = game.pendingComponentsForPlayer(i) ?? {'sibeeta': 0, 'deman': 0, 'hash': 0, 'minus': 0};
+                                    if ((comps['sibeeta'] as num? ?? 0).toInt() > 0) sibeetaCount++;
+                                    if ((comps['deman'] as num? ?? 0).toInt() > 0) demanCount++;
+                                    totalHash += (comps['hash'] as num? ?? 0).toInt();
+                                  }
+                                  
+                                  // Require exactly one queen and exactly one 10-diamond.
+                                  if (sibeetaCount != 1) {
+                                    errors.add('يجب ان يمتلك لاعب واحد بطاقة بنت السبيت\nيرجى التحقق من هو صاحب البطاقة');
+                                  }
+                                  if (demanCount != 1) {
+                                    errors.add('يجب ان يمتلك لاعب واحد بطاقة عشرة الديمن\nيرجى التحقق من هو صاحب البطاقة');
+                                  }
+
+                                  // Hearts total must be exactly 13 or 26 across all players.
+                                  if (!(totalHash == 13 || totalHash == 26)) {
+                                    errors.add('مجموع نقاط الهاص يجب ان يكون 13 او 26 نقطة فقط\nالمجموع الحالي: $totalHash');
+                                  }
+                                }
+
+                                if (errors.isNotEmpty) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      backgroundColor: Theme.of(context).colorScheme.surface,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      content: Text(
+                                        errors.join('\n\n'),
+                                        textAlign: TextAlign.right,
+                                        style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(ctx).pop(),
+                                          child: Text('حسنا', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                game.finalizeRound();
+                                Navigator.pop(context); // العودة للداشبورد يدوياً
+                              }
+                            : null,
+                        child: Text('تسجيل', 
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    height: 54,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Theme.of(context).dividerColor),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: game.currentRoundProgress > 0 ? () async {
+                        final should = await showDialog<bool>(
+                          context: context,
+                          builder: (c) => Dialog(
+                            backgroundColor: Colors.transparent,
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.symmetric(horizontal: 24),
+                              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                mainAxisSize: minAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('هل أنت متأكد من إعادة التعيين ؟',
+                                      textAlign: TextAlign.right,
+                                      style: Theme.of(context).dialogTheme.titleTextStyle),
+                                  const SizedBox(height: 12),
+                                  Text('سيتم حذف جميع النقاط المدخلة في هذه الجولة. هل تريد المتابعة ؟',
+                                      textAlign: TextAlign.right,
+                                      style: Theme.of(context).dialogTheme.contentTextStyle?.copyWith(
+                                        color: const Color.fromARGB(255, 255, 82, 82),
+                                      )),
+                                  const SizedBox(height: 18),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(c).pop(false),
+                                        child: Text('لا', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(c).pop(true),
+                                        child: Text('نعم', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent)),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                        if (should == true) {
+                          game.clearPendingScores();
+                          // Also clear local text controllers to keep UI in sync
+                          for (var controller in _controllers.values) {
+                            controller.clear();
+                          }
+                        }
+                      } : null,
+                      child: Icon(Icons.refresh, color: game.currentRoundProgress > 0 ? Theme.of(context).textTheme.bodyLarge?.color : Theme.of(context).dividerColor, size: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Keyboard action bar
+            if (keyboardHeight > 0 && game.scoringMode == ScoringMode.manual)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: keyboardHeight,
+                child: KeyboardActionBar(
+                  onPrevious: () {
+                    // Find which index is focused
+                    int currentIdx = -1;
+                    for (int i = 0; i < players.length; i++) {
+                      if (_focusNodes[i]?.hasFocus ?? false) {
+                        currentIdx = i;
+                        break;
+                      }
+                    }
+                    if (currentIdx > 0) {
+                      _focusNodes[currentIdx - 1]?.requestFocus();
+                    }
+                  },
+                  onNext: () {
+                    int currentIdx = -1;
+                    for (int i = 0; i < players.length; i++) {
+                      if (_focusNodes[i]?.hasFocus ?? false) {
+                        currentIdx = i;
+                        break;
+                      }
+                    }
+                    if (currentIdx != -1 && currentIdx < players.length - 1) {
+                      _focusNodes[currentIdx + 1]?.requestFocus();
+                    }
+                  },
+                  onDone: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                ),
+              ),
+          ],
         ),
       ),
-      bottomSheet: game.scoringMode == ScoringMode.manual 
-        ? KeyboardActionBar(
-            onDone: () {
-              FocusScope.of(context).unfocus();
-            },
-          )
-        : null,
     );
   }
 
-  Widget _buildManualModeList(GameProvider game, List<Player> players) {
+  Widget _buildManualModeList(GameProvider game, List<Player> players, double keyboardHeight) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      padding: EdgeInsets.fromLTRB(24, 8, 24, (keyboardHeight > 0) ? keyboardHeight + 60 : 80),
       itemCount: players.length,
+
       itemBuilder: (context, i) {
         final p = players[i];
         final hasScoredThisRound = game.pendingScoreForPlayer(i) != null;
@@ -425,9 +466,9 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
     );
   }
 
-  Widget _buildCardModeGrid(GameProvider game, List<Player> players) {
+  Widget _buildCardModeGrid(GameProvider game, List<Player> players, double keyboardHeight) {
     return GridView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, (keyboardHeight > 0) ? keyboardHeight + 60 : 80),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 12,

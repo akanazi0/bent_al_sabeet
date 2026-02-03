@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 /// Especially useful for numeric keyboards on iOS which lack these actions.
 class KeyboardActionBar extends StatelessWidget {
   final VoidCallback? onDone;
+  final VoidCallback? onPrevious;
+  final VoidCallback? onNext;
   final bool showDone;
 
   const KeyboardActionBar({
     super.key,
     this.onDone,
+    this.onPrevious,
+    this.onNext,
     this.showDone = true,
   });
 
@@ -37,8 +41,42 @@ class KeyboardActionBar extends StatelessWidget {
           ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            // Left-aligned navigation arrows
+            if (onPrevious != null || onNext != null)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: onPrevious,
+                    icon: Icon(
+                      Icons.keyboard_arrow_up,
+                      color: onPrevious != null 
+                          ? Theme.of(context).colorScheme.primary 
+                          : Theme.of(context).dividerColor,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    onPressed: onNext,
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: onNext != null 
+                          ? Theme.of(context).colorScheme.primary 
+                          : Theme.of(context).dividerColor,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            
+            const Spacer(),
+            
+            // Right-aligned Done button
             if (showDone && onDone != null)
               TextButton(
                 onPressed: onDone,
@@ -58,3 +96,4 @@ class KeyboardActionBar extends StatelessWidget {
     );
   }
 }
+
