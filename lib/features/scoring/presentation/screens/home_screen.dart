@@ -63,10 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,85 +272,85 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+          ),
             
-            // Fixed bottom button
-            Positioned(
-              left: 24,
-              right: 24,
-              bottom: 12,
-              child: SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3574F0),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
+          // Fixed bottom button
+          Positioned(
+            left: 24,
+            right: 24,
+            bottom: MediaQuery.paddingOf(context).bottom + 12,
+            child: SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3574F0),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  onPressed: () {
-                    final names = controllers
-                        .take(playerCount)
-                        .map((c) => c.text.trim())
-                        .toList();
-                    
-                    // Auto-fill empty names
-                    for (int i = 0; i < names.length; i++) {
-                      if (names[i].isEmpty) {
-                        names[i] = 'اللاعب ${i + 1}';
-                      }
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  final names = controllers
+                      .take(playerCount)
+                      .map((c) => c.text.trim())
+                      .toList();
+                  
+                  // Auto-fill empty names
+                  for (int i = 0; i < names.length; i++) {
+                    if (names[i].isEmpty) {
+                      names[i] = 'اللاعب ${i + 1}';
                     }
+                  }
 
-                    context.read<GameProvider>().startNewGame(names, pointsLimit);
-                    
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const DashboardScreen()),
-                    );
-                  },
-                  child: Text(
-                    'بدء الجلسة',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+                  context.read<GameProvider>().startNewGame(names, pointsLimit);
+                  
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                  );
+                },
+                child: Text(
+                  'بدء الجلسة',
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
             ),
+          ),
 
-            // Keyboard action bar floating above keyboard
-            if (keyboardHeight > 0)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: keyboardHeight,
-                child: KeyboardActionBar(
-                  onPrevious: () {
-                    // Collect all FocusNodes in order
-                    final allNodes = [pointsLimitFocusNode, ...focusNodes.take(playerCount)];
-                    // Find current focused node index
-                    int currentIndex = allNodes.indexWhere((node) => node.hasFocus);
-                    if (currentIndex > 0) {
-                      allNodes[currentIndex - 1].requestFocus();
-                    }
-                  },
-                  onNext: () {
-                    final allNodes = [pointsLimitFocusNode, ...focusNodes.take(playerCount)];
-                    int currentIndex = allNodes.indexWhere((node) => node.hasFocus);
-                    if (currentIndex != -1 && currentIndex < allNodes.length - 1) {
-                      allNodes[currentIndex + 1].requestFocus();
-                    }
-                  },
-                  onDone: () {
-                    pointsLimitFocusNode.unfocus();
-                    for (var node in focusNodes) {
-                      node.unfocus();
-                    }
-                  },
-                ),
+          // Keyboard action bar floating above keyboard
+          if (keyboardHeight > 0)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: keyboardHeight,
+              child: KeyboardActionBar(
+                onPrevious: () {
+                  // Collect all FocusNodes in order
+                  final allNodes = [pointsLimitFocusNode, ...focusNodes.take(playerCount)];
+                  // Find current focused node index
+                  int currentIndex = allNodes.indexWhere((node) => node.hasFocus);
+                  if (currentIndex > 0) {
+                    allNodes[currentIndex - 1].requestFocus();
+                  }
+                },
+                onNext: () {
+                  final allNodes = [pointsLimitFocusNode, ...focusNodes.take(playerCount)];
+                  int currentIndex = allNodes.indexWhere((node) => node.hasFocus);
+                  if (currentIndex != -1 && currentIndex < allNodes.length - 1) {
+                    allNodes[currentIndex + 1].requestFocus();
+                  }
+                },
+                onDone: () {
+                  pointsLimitFocusNode.unfocus();
+                  for (var node in focusNodes) {
+                    node.unfocus();
+                  }
+                },
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

@@ -14,7 +14,7 @@ class MainMenuScreen extends StatelessWidget {
         children: [
           // Theme Toggle
           Positioned(
-            top: 48,
+            top: 64,
             right: 24,
             child: Consumer<GameProvider>(
               builder: (context, gameProvider, child) {
