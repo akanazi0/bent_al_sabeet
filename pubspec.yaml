@@ -35,10 +35,12 @@ flutter:
 
   assets:
     - assets/images/logo02.png
+    - assets/images/logo.png
+    - assets/images/logo_light.png
     - assets/icon.png
     - assets/fonts/
 
   fonts:
-    - family: AHManal
+    - family: Camel
       fonts:
-        - asset: assets/fonts/ah-manal-bold.ttf
+        - asset: assets/fonts/Camel.otf

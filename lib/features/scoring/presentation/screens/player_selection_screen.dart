@@ -105,9 +105,9 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2B2B2B),
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF3E3E3E)),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: Row(
                     children: [
@@ -127,10 +127,10 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                             child: Text(
                               'وضع البطاقات',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: game.scoringMode == ScoringMode.card
                                     ? Colors.white
-                                    : const Color(0xFFA9B7C6),
+                                    : Theme.of(context).textTheme.bodyMedium?.color,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                               ),
@@ -157,7 +157,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: game.scoringMode == ScoringMode.manual
                                     ? Colors.white
-                                    : const Color(0xFFA9B7C6),
+                                    : Theme.of(context).textTheme.bodyMedium?.color,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                               ),
@@ -394,13 +394,13 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: hasScoredThisRound
-                ? const Color(0xFF3574F0).withOpacity(0.1)
-                : const Color(0xFF2B2B2B),
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: hasScoredThisRound
-                  ? const Color(0xFF3574F0).withOpacity(0.5)
-                  : const Color(0xFF3E3E3E),
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                  : Theme.of(context).dividerColor,
               width: 1,
             ),
           ),
@@ -412,7 +412,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   p.name,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontSize: 20,
-                    color: const Color(0xFFA9B7C6),
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
               ),
@@ -436,10 +436,10 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                       hintStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
+                        color: Theme.of(context).hintColor.withOpacity(0.3),
                       ),
                       filled: true,
-                      fillColor: const Color(0xFF1E1E1E),
+                      fillColor: Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6),
                         borderSide: BorderSide.none,
@@ -491,17 +491,17 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: hasScoredThisRound 
-                  ? const Color(0xFF3574F0).withOpacity(0.1) 
-                  : const Color(0xFF2B2B2B),
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.1) 
+                  : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: hasScoredThisRound ? const Color(0xFF3574F0) : const Color(0xFF3E3E3E)
+                color: hasScoredThisRound ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor
               ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(p.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 22, color: const Color(0xFFA9B7C6))), // 18 -> 22
+                Text(p.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 22)), // 18 -> 22
                 if (hasScoredThisRound)
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),

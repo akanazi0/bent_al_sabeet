@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/game_provider.dart';
 import 'home_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
@@ -10,6 +12,35 @@ class MainMenuScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // Theme Toggle
+          Positioned(
+            top: 48,
+            right: 24,
+            child: Consumer<GameProvider>(
+              builder: (context, gameProvider, child) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: () => gameProvider.toggleTheme(),
+                    icon: Icon(
+                      gameProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -20,7 +51,7 @@ class MainMenuScreen extends StatelessWidget {
                   height: 260,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    boxShadow: [
+                    boxShadow: Theme.of(context).brightness == Brightness.dark ? [
                       // Subtle inner glow
                       BoxShadow(
                         color: const Color(0xFF3574F0).withOpacity(0.08),
@@ -45,11 +76,16 @@ class MainMenuScreen extends StatelessWidget {
                         blurRadius: 280,
                         spreadRadius: 160,
                       ),
-                    ],
+                    ] : [],
                   ),
-                  child: Image.asset(
-                    'assets/images/logo02.png',
-                    width: 260,
+                  child: Transform.scale(
+                    scale: Theme.of(context).brightness == Brightness.dark ? 1.0 : 1.05,
+                    child: Image.asset(
+                      Theme.of(context).brightness == Brightness.dark 
+                          ? 'assets/images/logo02.png'
+                          : 'assets/images/logo_light.png',
+                      width: 260,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),

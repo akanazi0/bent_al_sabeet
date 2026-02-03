@@ -19,6 +19,8 @@ class GameProvider extends ChangeNotifier {
   int pointsLimit = 152; // Default limit
   ScoringMode scoringMode = ScoringMode.card; // Default to card mode
   bool isHeartsDoubled = false; // Global hearts doubled state for current round
+  bool isDarkMode = true; // Theme state, default to Dark
+
   // Store pending score components per player so we can validate special cards
   // (بنت السبيت, عشرة الديمن, الهاص, الماينس) individually before finalizing.
   // Using Map<String, dynamic> to store 'selectedHearts' as a Set<int>.
@@ -57,6 +59,11 @@ class GameProvider extends ChangeNotifier {
     isHeartsDoubled = !isHeartsDoubled;
     // Recalculate all pending scores with the new doubled state
     _recalculatePendingScores();
+    notifyListeners();
+  }
+
+  void toggleTheme() {
+    isDarkMode = !isDarkMode;
     notifyListeners();
   }
 

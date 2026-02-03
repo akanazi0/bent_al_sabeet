@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:provider/provider.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/providers/game_provider.dart';
 import 'package:bent_al_sabeet/features/scoring/presentation/screens/main_menu_screen.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -37,11 +38,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to the theme state
+    final isDark = context.watch<GameProvider>().isDarkMode;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'حاسبة بنت السبيت',
-      themeMode: ThemeMode.dark,
-      theme: _buildDarkTheme(),
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+      theme: _buildLightTheme(),
+      darkTheme: _buildDarkTheme(),
       home: const MainMenuScreen(),
       // Standardize scroll behavior across all platforms
       scrollBehavior: const MaterialScrollBehavior().copyWith(
@@ -60,9 +65,338 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  ThemeData _buildLightTheme() {
+    // Camel is the exclusive font for this application
+    const fontFamily = 'Camel';
+    final baseTextTheme = ThemeData.light().textTheme;
+    
+    final textTheme = baseTextTheme.copyWith(
+      // Display styles (large titles)
+      displayLarge: baseTextTheme.displayLarge?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 38,
+        fontWeight: FontWeight.w900,
+        color: const Color(0xFF111827),
+        letterSpacing: -0.5,
+        height: 1.2,
+      ),
+      displayMedium: baseTextTheme.displayMedium?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 34,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF111827),
+        letterSpacing: -0.5,
+        height: 1.2,
+      ),
+      displaySmall: baseTextTheme.displaySmall?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 30,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF111827),
+        letterSpacing: 0,
+        height: 1.2,
+      ),
+      // Headline styles
+      headlineLarge: baseTextTheme.headlineLarge?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 26,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF111827),
+        letterSpacing: 0,
+        height: 1.3,
+      ),
+      headlineMedium: baseTextTheme.headlineMedium?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF4B5563),
+        letterSpacing: 0,
+        height: 1.3,
+      ),
+      headlineSmall: baseTextTheme.headlineSmall?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF4B5563),
+        letterSpacing: 0,
+        height: 1.3,
+      ),
+      // Title styles
+      titleLarge: baseTextTheme.titleLarge?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF111827),
+        letterSpacing: 0,
+        height: 1.3,
+      ),
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF111827),
+        letterSpacing: 0,
+        height: 1.3,
+      ),
+      titleSmall: baseTextTheme.titleSmall?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF4B5563),
+        letterSpacing: 0,
+        height: 1.3,
+      ),
+      // Body styles (most common)
+      bodyLarge: baseTextTheme.bodyLarge?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 20,
+        fontWeight: FontWeight.w400,
+        color: const Color(0xFF4B5563),
+        letterSpacing: 0,
+        height: 1.5,
+      ),
+      bodyMedium: baseTextTheme.bodyMedium?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 18,
+        fontWeight: FontWeight.w400,
+        color: const Color(0xFF4B5563),
+        letterSpacing: 0,
+        height: 1.5,
+      ),
+      bodySmall: baseTextTheme.bodySmall?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: const Color(0xFF6B7280),
+        letterSpacing: 0,
+        height: 1.5,
+      ),
+      // Label styles (buttons, chips)
+      labelLarge: baseTextTheme.labelLarge?.copyWith(
+        fontFamily: fontFamily,
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+        letterSpacing: 0.5,
+        height: 1.2,
+      ),
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      platform: TargetPlatform.android,
+      visualDensity: VisualDensity.standard,
+      fontFamily: fontFamily,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: const Color(0xFFF3F4F6), // Light gray background
+      
+      cupertinoOverrideTheme: CupertinoThemeData(
+        brightness: Brightness.light,
+        primaryColor: const Color(0xFF3574F0),
+        textTheme: CupertinoTextThemeData(
+          primaryColor: const Color(0xFF111827),
+          textStyle: TextStyle(fontFamily: fontFamily, color: const Color(0xFF4B5563)),
+          actionTextStyle: TextStyle(fontFamily: fontFamily, color: const Color(0xFF3574F0)),
+          navActionTextStyle: TextStyle(fontFamily: fontFamily, color: const Color(0xFF3574F0)),
+          navTitleTextStyle: TextStyle(fontFamily: fontFamily, 
+            color: const Color(0xFF111827),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      
+      colorScheme: const ColorScheme.light(
+        primary: Color(0xFF3574F0),
+        secondary: Color(0xFF3574F0),
+        surface: Colors.white,
+        onSurface: Color(0xFF111827),
+        onPrimary: Colors.white,
+        error: Colors.redAccent,
+        onError: Colors.white,
+      ),
+      
+      textTheme: textTheme,
+      primaryTextTheme: textTheme,
+      
+      splashFactory: NoSplash.splashFactory,
+      highlightColor: Colors.transparent,
+      dividerColor: const Color(0xFFE5E7EB),
+      
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CustomPageTransitionBuilder(),
+          TargetPlatform.iOS: CustomPageTransitionBuilder(),
+          TargetPlatform.linux: CustomPageTransitionBuilder(),
+          TargetPlatform.macOS: CustomPageTransitionBuilder(),
+          TargetPlatform.windows: CustomPageTransitionBuilder(),
+        },
+      ),
+      
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFFF3F4F6),
+        foregroundColor: const Color(0xFF111827),
+        elevation: 0,
+        centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF111827),
+          letterSpacing: 0,
+        ),
+        iconTheme: const IconThemeData(
+          color: Color(0xFF111827),
+          size: 24,
+        ),
+      ),
+      
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF3574F0),
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          elevation: 0,
+          textStyle: TextStyle(fontFamily: fontFamily, 
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+      
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: const Color(0xFF3574F0),
+          textStyle: TextStyle(fontFamily: fontFamily, 
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
+          ),
+        ),
+      ),
+      
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: const Color(0xFF4B5563),
+          side: const BorderSide(color: Color(0xFFE5E7EB)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: TextStyle(fontFamily: fontFamily, 
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0,
+          ),
+        ),
+      ),
+      
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        elevation: 8,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        titleTextStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF111827),
+          letterSpacing: 0,
+        ),
+        contentTextStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF4B5563),
+          letterSpacing: 0,
+          height: 1.5,
+        ),
+      ),
+      
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF3574F0)),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.redAccent),
+        ),
+        labelStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF4B5563),
+          letterSpacing: 0,
+        ),
+        hintStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF9CA3AF),
+          letterSpacing: 0,
+        ),
+        helperStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF4B5563),
+          letterSpacing: 0,
+        ),
+        errorStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: Colors.redAccent,
+          letterSpacing: 0,
+        ),
+      ),
+      
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0xFFE5E7EB),
+        selectedColor: const Color(0xFF3574F0),
+        disabledColor: const Color(0xFFE5E7EB).withOpacity(0.5),
+        labelStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0,
+          color: const Color(0xFF111827),
+        ),
+        secondaryLabelStyle: TextStyle(fontFamily: fontFamily, 
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+          letterSpacing: 0,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        elevation: 0,
+      ),
+      
+      iconTheme: const IconThemeData(
+        color: Color(0xFF4B5563),
+        size: 24,
+      ),
+      
+      primaryIconTheme: const IconThemeData(
+        color: Color(0xFF3574F0),
+        size: 24,
+      ),
+    );
+  }
+
+
   ThemeData _buildDarkTheme() {
-    // AH Manal Bold is the exclusive font for this application
-    const fontFamily = 'AHManal';
+    // Camel is the exclusive font for this application
+    const fontFamily = 'Camel';
     final baseTextTheme = ThemeData.dark().textTheme;
     
     final textTheme = baseTextTheme.copyWith(

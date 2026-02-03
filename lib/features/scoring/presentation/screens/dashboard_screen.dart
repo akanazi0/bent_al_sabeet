@@ -371,7 +371,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             }
                           });
                         },
-                        child: Text('التسجيل', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        child: Text('سجل جولة', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ),
