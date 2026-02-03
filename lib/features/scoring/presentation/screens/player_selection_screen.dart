@@ -290,7 +290,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Column(
-                                mainAxisSize: minAxisSize.min,
+                                mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text('هل أنت متأكد من إعادة التعيين ؟',

@@ -286,7 +286,6 @@ class GameProvider extends ChangeNotifier {
     
     if (limitReached) {
       // Find min and max scores
-      int minScore = players!.map((p) => p.totalScore).reduce((a, b) => a < b ? a : b);
       int maxScore = players!.map((p) => p.totalScore).reduce((a, b) => a > b ? a : b);
       
       List<Player> losers = players!.where((p) => p.totalScore == maxScore).toList();
