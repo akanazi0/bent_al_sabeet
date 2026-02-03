@@ -276,12 +276,12 @@ class _HomeScreenState extends State<HomeScreen> {
             
           // Fixed bottom button
           Positioned(
-            left: 24,
-            right: 24,
-            bottom: MediaQuery.paddingOf(context).bottom + 12,
+            left: 20,
+            right: 20,
+            bottom: MediaQuery.paddingOf(context).bottom + 40 + 12, // Match DashboardScreen
             child: SizedBox(
               width: double.infinity,
-              height: 54,
+              height: 50, // Match DashboardScreen
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3574F0),
@@ -320,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           // Keyboard action bar floating above keyboard
-          if (keyboardHeight > 0)
+          if ((pointsLimitFocusNode.hasFocus || focusNodes.any((n) => n.hasFocus)) && keyboardHeight > 0)
             Positioned(
               left: 0,
               right: 0,

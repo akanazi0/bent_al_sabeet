@@ -95,9 +95,8 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
             fontWeight: FontWeight.bold,
           )),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
+      body: Stack(
+        children: [
             Column(
               children: [
                 // Mode switch
@@ -178,15 +177,15 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
             
             // Fixed bottom buttons
             Positioned(
-              left: 24,
-              right: 24,
+              left: 20,
+              right: 20,
               // Pin to bottom safe area + 40px (Ad) + 12px (Margin)
               bottom: MediaQuery.paddingOf(context).bottom + 40 + 12,
               child: Row(
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 54,
+                      height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF3574F0), // اللون الأزرق
@@ -271,7 +270,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
                   ),
                   const SizedBox(width: 12),
                   SizedBox(
-                    height: 54,
+                    height: 50,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Theme.of(context).dividerColor),
@@ -339,7 +338,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
             ),
             
             // Keyboard action bar
-            if (keyboardHeight > 0 && game.scoringMode == ScoringMode.manual)
+            if (_focusNodes.values.any((n) => n.hasFocus) && keyboardHeight > 0 && game.scoringMode == ScoringMode.manual)
               Positioned(
                 left: 0,
                 right: 0,
@@ -377,8 +376,7 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
               ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildManualModeList(GameProvider game, List<Player> players, double keyboardHeight) {

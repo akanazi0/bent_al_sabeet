@@ -166,7 +166,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
             bottom: MediaQuery.paddingOf(context).bottom + 40 + 12,
             child: SizedBox(
               width: double.infinity,
-              height: 54,
+              height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3574F0),
