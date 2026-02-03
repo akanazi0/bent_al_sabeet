@@ -180,7 +180,8 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
             Positioned(
               left: 24,
               right: 24,
-              bottom: 12,
+              // Pin to bottom safe area + 40px (Ad) + 12px (Margin)
+              bottom: MediaQuery.paddingOf(context).bottom + 40 + 12,
               child: Row(
                 children: [
                   Expanded(
@@ -381,8 +382,13 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   }
 
   Widget _buildManualModeList(GameProvider game, List<Player> players, double keyboardHeight) {
+    // Bottom padding: Ad(40) + Button(54) + Spacing(20) + Safe Area
+    final double bottomPadding = keyboardHeight > 0 
+        ? keyboardHeight + 80 
+        : MediaQuery.paddingOf(context).bottom + 120;
+
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(24, 8, 24, (keyboardHeight > 0) ? keyboardHeight + 60 : 80),
+      padding: EdgeInsets.fromLTRB(24, 8, 24, bottomPadding),
       itemCount: players.length,
 
       itemBuilder: (context, i) {
@@ -467,8 +473,13 @@ class _PlayerSelectionScreenState extends State<PlayerSelectionScreen> {
   }
 
   Widget _buildCardModeGrid(GameProvider game, List<Player> players, double keyboardHeight) {
+    // Bottom padding: Ad(40) + Button(54) + Spacing(20) + Safe Area
+    final double bottomPadding = keyboardHeight > 0 
+        ? keyboardHeight + 80 
+        : MediaQuery.paddingOf(context).bottom + 120;
+
     return GridView.builder(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, (keyboardHeight > 0) ? keyboardHeight + 60 : 80),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomPadding),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 12,

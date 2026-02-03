@@ -83,6 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
@@ -100,142 +101,157 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 fontWeight: FontWeight.bold,
               )),
         ),
-        body: Column(
+        body: Stack(
           children: [
-            // Top player strip sized to match grid columns so columns align.
-            LayoutBuilder(builder: (context, constraints) {
-              final double availableWidth = constraints.maxWidth - 24; // account for horizontal padding
-              final double spacing = (playerCount > 1) ? 8.0 : 0.0;
-              final double cellWidth = playerCount > 0 ? (availableWidth - (playerCount - 1) * spacing) / playerCount : availableWidth;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  height: 130,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    child: Row(
-                      children: List.generate(playerCount, (i) {
-                        final p = playersList[i];
-                        return Container(
-                          width: cellWidth,
-                          margin: EdgeInsets.only(right: i == playerCount - 1 ? 0 : spacing, left: 0, top: 5, bottom: 5),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: p.isKing ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
-                              width: p.isKing ? 2 : 1,
+            // Main Content
+            Positioned.fill(
+              child: Padding(
+                // Add bottom padding: ButtonHeight(50) + ButtonMargin(20) + AdHeight(40) + Extra(20) = ~130
+                padding: const EdgeInsets.only(bottom: 130),
+                child: Column(
+                  children: [
+                    // Top player strip sized to match grid columns so columns align.
+                    LayoutBuilder(builder: (context, constraints) {
+                      final double availableWidth = constraints.maxWidth - 24; // account for horizontal padding
+                      final double spacing = (playerCount > 1) ? 8.0 : 0.0;
+                      final double cellWidth = playerCount > 0 ? (availableWidth - (playerCount - 1) * spacing) / playerCount : availableWidth;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: SizedBox(
+                          height: 130,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            child: Row(
+                              children: List.generate(playerCount, (i) {
+                                final p = playersList[i];
+                                return Container(
+                                  width: cellWidth,
+                                  margin: EdgeInsets.only(right: i == playerCount - 1 ? 0 : spacing, left: 0, top: 5, bottom: 5),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                      color: p.isKing ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+                                      width: p.isKing ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(p.name,
+                                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20, height: 1.1)),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Padding(
+                                         padding: const EdgeInsets.only(top: 6.0),
+                                        child: Text('${p.totalScore}',
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              height: 1.0,
+                                            )),
+                                      ),
+    
+                                      if (p.isDealer) Padding(
+                                        padding: const EdgeInsets.only(top: 6.0),
+                                        child: Text('الموزع', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent, fontSize: 20, height: 1.0)),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                );
+                              }),
                             ),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0, left: 4.0, right: 4.0),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(p.name,
-                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20, height: 1.1)),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Padding(
-                                 padding: const EdgeInsets.only(top: 6.0),
-                                child: Text('${p.totalScore}',
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.0,
-                                    )),
-                              ),
-
-                              if (p.isDealer) Padding(
-                                padding: const EdgeInsets.only(top: 6.0),
-                                child: Text('الموزع', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent, fontSize: 20, height: 1.0)),
-                              ),
-                              const SizedBox(height: 8),
-                            ],
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                ),
-              );
-            }),
-            const SizedBox(height: 8),
-            // Grid of rounds under player cards: columns aligned per player,
-            // oldest at top, newest at bottom. Vertical-only scroll.
-            Builder(builder: (context) {
-              final int maxRounds = playersList.isEmpty
-                  ? 0
-                  : playersList.map((p) => p.scores.length).reduce((a, b) => a > b ? a : b);
-              final double cellHeight = 56.0; // slightly larger for touch
-
-              if (maxRounds == 0) {
-                return const SizedBox(height: 40);
-              }
-
-              final int lastIndex = maxRounds - 1;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: LayoutBuilder(builder: (context, constraints) {
-                  final double availableWidth = constraints.maxWidth;
-                  final double cellWidth = (availableWidth - (playerCount - 1) * 8) / (playerCount > 0 ? playerCount : 1);
-
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.55,
-                    child: ListView.builder(
-                      controller: _verticalController,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: maxRounds,
-                      itemBuilder: (context, roundIndex) {
-                        // show oldest at top -> newest at bottom
-                        return Row(
-                          children: List.generate(playerCount, (pIndex) {
-                            final p = playersList[pIndex];
-                            final bool has = roundIndex < p.scores.length;
-                            final text = has ? '${p.scores[roundIndex]}' : '';
-                            final bool isLatestRound = roundIndex == lastIndex;
-                            return Container(
-                              width: cellWidth,
-                              margin: EdgeInsets.only(right: pIndex == playerCount - 1 ? 0 : 8, bottom: 8),
-                              height: cellHeight,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: isLatestRound ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
-                                  width: isLatestRound ? 2 : 1,
-                                ),
-                                boxShadow: isLatestRound
-                                    ? [
-                                        BoxShadow(
-                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
-                                          blurRadius: 8,
-                                          spreadRadius: 1,
-                                        )
-                                      ]
-                                    : null,
-                              ),
-                                child: Center(
-                                  child: Text(text, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                                ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 8),
+                    // Grid of rounds under player cards: columns aligned per player,
+                    // oldest at top, newest at bottom. Vertical-only scroll.
+                    Expanded(
+                      child: Builder(builder: (context) {
+                        final int maxRounds = playersList.isEmpty
+                            ? 0
+                            : playersList.map((p) => p.scores.length).reduce((a, b) => a > b ? a : b);
+                        final double cellHeight = 56.0; // slightly larger for touch
+          
+                        if (maxRounds == 0) {
+                          return const SizedBox(height: 40);
+                        }
+          
+                        final int lastIndex = maxRounds - 1;
+          
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            final double availableWidth = constraints.maxWidth;
+                            final double cellWidth = (availableWidth - (playerCount - 1) * 8) / (playerCount > 0 ? playerCount : 1);
+          
+                            return ListView.builder(
+                              controller: _verticalController,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: maxRounds,
+                              itemBuilder: (context, roundIndex) {
+                                // show oldest at top -> newest at bottom
+                                return Row(
+                                  children: List.generate(playerCount, (pIndex) {
+                                    final p = playersList[pIndex];
+                                    final bool has = roundIndex < p.scores.length;
+                                    final text = has ? '${p.scores[roundIndex]}' : '';
+                                    final bool isLatestRound = roundIndex == lastIndex;
+                                    return Container(
+                                      width: cellWidth,
+                                      margin: EdgeInsets.only(right: pIndex == playerCount - 1 ? 0 : 8, bottom: 8),
+                                      height: cellHeight,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.surface,
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: isLatestRound ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+                                          width: isLatestRound ? 2 : 1,
+                                        ),
+                                        boxShadow: isLatestRound
+                                            ? [
+                                                BoxShadow(
+                                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                                  blurRadius: 8,
+                                                  spreadRadius: 1,
+                                                )
+                                              ]
+                                            : null,
+                                      ),
+                                        child: Center(
+                                          child: Text(text, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          )),
+                                        ),
+                                    );
+                                  }),
+                                );
+                              },
                             );
                           }),
                         );
-                      },
+                      }),
                     ),
-                  );
-                }),
-              );
-            }),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
+                  ],
+                ),
+              ),
+            ),
+
+            // Pinned Bottom Buttons with Ad Space
+            Positioned(
+              left: 20,
+              right: 20,
+              // Pin to bottom safe area + 40px (Ad) + 12px (Margin)
+              bottom: MediaQuery.of(context).padding.bottom + 40 + 12,
               child: Row(
                 children: [
                   Expanded(

@@ -56,6 +56,7 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
     final game = Provider.of<GameProvider>(context);
     
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
@@ -69,13 +70,19 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
         ),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-          child: Column(
-            children: [
-              Expanded(
+      body: Stack(
+        children: [
+          // Scrollable Content
+          Positioned.fill(
+            child: SafeArea( // Keep SafeArea for content
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0), // removed vertical padding, handled inside
                 child: SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    top: 12, 
+                    // Bottom Padding: Button(54) + Ad(40) + Margin(12) + Extra(20) = ~130
+                    bottom: 130 + MediaQuery.of(context).viewInsets.bottom, 
+                  ),
                   child: Column(
                     children: [
                       const SizedBox(height: 8),
@@ -148,39 +155,46 @@ class _ScoreEntryScreenState extends State<ScoreEntryScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3574F0),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
+            ),
+          ),
+
+          // Pinned Bottom Button with Ad Space
+          Positioned(
+            left: 20,
+            right: 20,
+             // Pin to bottom safe area + 40px (Ad) + 12px (Margin)
+            bottom: MediaQuery.paddingOf(context).bottom + 40 + 12,
+            child: SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3574F0),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  onPressed: () {
-                    final game = context.read<GameProvider>();
-                    game.addPendingScoreComponents(
-                      sibeeta: sibeeta, 
-                      deman: deman, 
-                      hash: hash(game), 
-                      minus: minus,
-                      selectedHearts: selectedHearts,
-                    );
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'تـم',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  final game = context.read<GameProvider>();
+                  game.addPendingScoreComponents(
+                    sibeeta: sibeeta, 
+                    deman: deman, 
+                    hash: hash(game), 
+                    minus: minus,
+                    selectedHearts: selectedHearts,
+                  );
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'تـم',
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
