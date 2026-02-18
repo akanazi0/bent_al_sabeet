@@ -4,7 +4,7 @@
 
 **Bent Al Sabeet Calculator**
 
-A sleek, modern score-tracking app for the popular **Hearts (بنت السبيت)** card game — built with Flutter.
+A sleek, modern score-tracking app for the popular **(بنت السبيت)** card game — built with Flutter.
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.10+-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white)](https://dart.dev)
@@ -16,9 +16,8 @@ A sleek, modern score-tracking app for the popular **Hearts (بنت السبيت
 ---
 
 ## Overview
-
-**حاسبة بنت السبيت** (Bent Al Sabeet Calculator) 
-is a beautifully crafted score-keeping companion for the classic Hearts card game widely played in the Arab world. It eliminates the need for pen-and-paper scoring with an intuitive interface designed for quick, accurate score tracking during live gameplay.
+(Bent Al Sabeet Calculator)
+is a beautifully crafted score-keeping companion for the classic card game widely played in the Arab world. It eliminates the need for pen-and-paper scoring with an intuitive interface designed for quick, accurate score tracking during live gameplay.
 
 ---
 
@@ -33,15 +32,13 @@ is a beautifully crafted score-keeping companion for the classic Hearts card gam
 
 | Mode | Description |
 |------|-------------|
-| **Card Mode**  | Tap or drag to select specific hearts won, بنت السبيت (Queen of Spades), عشرة الديمن (10 of Diamonds), and القاطع (Qate3). Scores are calculated automatically. |
+| **Card Mode**  | Tap or drag to select specific hearts, بنت السبيت (Queen of Spades), عشرة الديمن (10 of Diamonds). Scores are calculated automatically. |
 | **Manual Mode**  | Directly enter numeric scores per player for quick input. |
 
 ### Live Dashboard
 - Real-time **round-by-round** score table
 - **Running totals** per player
-- **Undo** last round
 - Automatic **game-over detection** when a player reaches the point limit
-- Shared card pool — cards claimed by one player are disabled for others
   
 ---
 
