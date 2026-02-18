@@ -15,44 +15,37 @@ A sleek, modern score-tracking app for the popular **Hearts (بنت السبيت
 
 ---
 
-## 📖 Overview
+## Overview
 
-**حاسبة بنت السبيت** (Bent Al Sabeet Calculator) is a beautifully crafted score-keeping companion for the classic Hearts card game widely played in the Arab world. It eliminates the need for pen-and-paper scoring with an intuitive interface designed for quick, accurate score tracking during live gameplay.
+**حاسبة بنت السبيت** (Bent Al Sabeet Calculator) 
+is a beautifully crafted score-keeping companion for the classic Hearts card game widely played in the Arab world. It eliminates the need for pen-and-paper scoring with an intuitive interface designed for quick, accurate score tracking during live gameplay.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎮 Game Setup
+### Game Setup
 - Support for **4 or 5 players**
 - Custom **player names** with Arabic/English input
 - Configurable **point limit** (default: 152)
 
-### 🃏 Dual Scoring Modes
+### Dual Scoring Modes
 
 | Mode | Description |
 |------|-------------|
-| **Card Mode** 🂡 | Tap or drag to select specific hearts won, بنت السبيت (Queen of Spades), عشرة الديمن (10 of Diamonds), and القاطع (Qate3). Scores are calculated automatically. |
-| **Manual Mode** ✏️ | Directly enter numeric scores per player for quick input. |
+| **Card Mode**  | Tap or drag to select specific hearts won, بنت السبيت (Queen of Spades), عشرة الديمن (10 of Diamonds), and القاطع (Qate3). Scores are calculated automatically. |
+| **Manual Mode**  | Directly enter numeric scores per player for quick input. |
 
-### 📊 Live Dashboard
+### Live Dashboard
 - Real-time **round-by-round** score table
 - **Running totals** per player
 - **Undo** last round
 - Automatic **game-over detection** when a player reaches the point limit
 - Shared card pool — cards claimed by one player are disabled for others
-
-### 🎨 Design & UX
-- **Dark & Light themes** with a toggle on the main menu
-- Custom **Camel** Arabic font throughout the app
-- Premium page transitions and smooth animations
-- Consistent cross-platform styling (Material overrides Cupertino)
-- Custom numeric keypad with a keyboard action bar for seamless navigation
-- Hearts doubled toggle for variant rules
-
+  
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 lib/
@@ -79,7 +72,7 @@ lib/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) `^3.10.7`
@@ -111,16 +104,9 @@ flutter build ios --release
 # Web
 flutter build web --release
 ```
-
 ---
 
-## 📱 Screenshots
-
-> *Coming soon — Add screenshots of the main menu, game setup, score entry, and dashboard screens.*
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
@@ -138,7 +124,5 @@ This project is private and not licensed for redistribution.
 ---
 
 <div align="center">
-
-**Made with ❤️ for Hearts players everywhere**
 
 </div>
