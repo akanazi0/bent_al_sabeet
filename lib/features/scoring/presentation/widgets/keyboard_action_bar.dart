@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// A widget that provides a toolbar above the keyboard with "Next" and "Done" buttons.
 /// Especially useful for numeric keyboards on iOS which lack these actions.
@@ -18,6 +19,9 @@ class KeyboardActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Not needed on web — browsers handle keyboard input natively
+    if (kIsWeb) return const SizedBox.shrink();
+
     // Only show if keyboard is visible
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     if (keyboardHeight == 0) return const SizedBox.shrink();
