@@ -2,7 +2,7 @@
 
 # ♠️ حاسبة بنت السبيت
 
-**SbeetCalc**
+# SbeetCalc
 
 A sleek, modern score-tracking app for the popular **(بنت السبيت)** card game — built with Flutter.
 
@@ -16,7 +16,7 @@ A sleek, modern score-tracking app for the popular **(بنت السبيت)** car
 ---
 
 ## Overview
-(Bent Al Sabeet Calculator)
+(SbeetCalc)
 is a beautifully crafted score-keeping companion for the classic card game widely played in the Arab world. It eliminates the need for pen-and-paper scoring with an intuitive interface designed for quick, accurate score tracking during live gameplay.
 
 ---
