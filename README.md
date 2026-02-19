@@ -110,7 +110,6 @@ flutter build web --release
 | **Flutter** | Cross-platform UI framework |
 | **Provider** | State management |
 | **Material 3** | Design system |
-| **Camel Font** | Custom Arabic typography |
 
 ---
 
