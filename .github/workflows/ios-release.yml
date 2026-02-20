@@ -71,17 +71,30 @@ jobs:
           echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode -o $CERTIFICATE_PATH
           echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o $PROFILE_PATH
 
+          # Download and install Apple WWDR intermediate certificate
+          curl -sL https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer -o $RUNNER_TEMP/AppleWWDRCAG3.cer
+
           # Create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # Import certificate into keychain
+          # Import Apple WWDR intermediate certificate
+          security import $RUNNER_TEMP/AppleWWDRCAG3.cer -k $KEYCHAIN_PATH -T /usr/bin/codesign
+
+          # Import distribution certificate
           security import $CERTIFICATE_PATH -P "$CERTIFICATE_PASSWORD" \
             -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple: \
             -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # Add keychain to search list (include system keychains)
+          security list-keychain -d user -s $KEYCHAIN_PATH $(security list-keychain -d user | tr -d '"')
+
+          # Debug: verify certificates are installed
+          echo "=== Installed certificates ==="
+          security find-identity -v -p codesigning $KEYCHAIN_PATH
+          echo "=== End certificates ==="
 
           # Install provisioning profile with correct UUID filename
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -100,13 +113,13 @@ jobs:
           sed -i '' 's/CODE_SIGN_STYLE = Automatic/CODE_SIGN_STYLE = Manual/g' Runner.xcodeproj/project.pbxproj
           # Set the development team
           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = W3KXF5MMWC;/g' Runner.xcodeproj/project.pbxproj
-          # Add team if not present (for Runner target)
+          # Add team if not present
           if ! grep -q 'DEVELOPMENT_TEAM = W3KXF5MMWC' Runner.xcodeproj/project.pbxproj; then
             sed -i '' '/PRODUCT_BUNDLE_IDENTIFIER = com.example.bentAlSabeet;/a\
                                 DEVELOPMENT_TEAM = W3KXF5MMWC;' Runner.xcodeproj/project.pbxproj
           fi
           # Set code sign identity to distribution
-          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution"/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution"/g' Runner.xcodeproj/project.pbxproj
           echo "✅ Xcode configured for manual signing"
 
       # ──────────────────────────────────────
