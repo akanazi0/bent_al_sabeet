@@ -109,18 +109,21 @@ jobs:
       - name: Configure Xcode signing
         run: |
           cd ios
-          # Switch to manual signing
+          # Explicitly set manual signing for the Runner Release target (97C147071CF9000F007C117D)
+          # We inject the settings right after 'buildSettings = {'
+          sed -i '' '/97C147071CF9000F007C117D \/\* Release \*\/ = {/,/name = Release;/ s/buildSettings = {/buildSettings = {\
+          				CODE_SIGN_STYLE = Manual;\
+          				DEVELOPMENT_TEAM = W3KXF5MMWC;\
+          				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";\
+          				PROVISIONING_PROFILE = "${{ env.PROFILE_UUID }}";\
+          				PROVISIONING_PROFILE_SPECIFIER = "${{ env.PROFILE_UUID }}";/' Runner.xcodeproj/project.pbxproj
+          
+          # Also ensure RunnerTests (if any) don't conflict, though usually ignored for IPA
           sed -i '' 's/CODE_SIGN_STYLE = Automatic/CODE_SIGN_STYLE = Manual/g' Runner.xcodeproj/project.pbxproj
-          # Set the development team
-          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = W3KXF5MMWC;/g' Runner.xcodeproj/project.pbxproj
-          # Add team if not present
-          if ! grep -q 'DEVELOPMENT_TEAM = W3KXF5MMWC' Runner.xcodeproj/project.pbxproj; then
-            sed -i '' '/PRODUCT_BUNDLE_IDENTIFIER = com.example.bentAlSabeet;/a\
-                                DEVELOPMENT_TEAM = W3KXF5MMWC;' Runner.xcodeproj/project.pbxproj
-          fi
-          # Set code sign identity to distribution
-          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution"/g' Runner.xcodeproj/project.pbxproj
-          echo "✅ Xcode configured for manual signing"
+          
+          echo "✅ Xcode configured for manual signing (Runner Release target updated)"
+          # Debug: print the updated block to verify
+          grep -A 20 "97C147071CF9000F007C117D /\* Release \*/" Runner.xcodeproj/project.pbxproj
 
       # ──────────────────────────────────────
       # 6. Build the IPA
