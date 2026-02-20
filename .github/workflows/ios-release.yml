@@ -83,9 +83,31 @@ jobs:
             -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
-          # Install provisioning profile
+          # Install provisioning profile with correct UUID filename
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PROFILE_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i $PROFILE_PATH))
+          cp $PROFILE_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+          echo "✅ Profile installed: $PROFILE_UUID"
+
+      # ──────────────────────────────────────
+      # 5.5. Configure Xcode for Manual Signing
+      # ──────────────────────────────────────
+      - name: Configure Xcode signing
+        run: |
+          cd ios
+          # Switch to manual signing
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic/CODE_SIGN_STYLE = Manual/g' Runner.xcodeproj/project.pbxproj
+          # Set the development team
+          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = W3KXF5MMWC;/g' Runner.xcodeproj/project.pbxproj
+          # Add team if not present (for Runner target)
+          if ! grep -q 'DEVELOPMENT_TEAM = W3KXF5MMWC' Runner.xcodeproj/project.pbxproj; then
+            sed -i '' '/PRODUCT_BUNDLE_IDENTIFIER = com.example.bentAlSabeet;/a\
+                                DEVELOPMENT_TEAM = W3KXF5MMWC;' Runner.xcodeproj/project.pbxproj
+          fi
+          # Set code sign identity to distribution
+          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution"/g' Runner.xcodeproj/project.pbxproj
+          echo "✅ Xcode configured for manual signing"
 
       # ──────────────────────────────────────
       # 6. Build the IPA
