@@ -147,18 +147,42 @@ jobs:
         run: |
           # Write the API key to the expected location
           mkdir -p ~/.private_keys
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+          
+          # Handle potentially malformed secret (restore newlines if user pasted as one line)
+          # We use a temp file to process the key
+          echo "${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}" > $RUNNER_TEMP/private_key_raw
+          
+          # If the key doesn't have multiple lines (checked by wc -l), we assume it needs formatting
+          if [ $(wc -l < $RUNNER_TEMP/private_key_raw) -lt 2 ]; then
+            echo "⚠️ Correcting one-line private key format..."
+            sed -e 's/-----BEGIN PRIVATE KEY-----/&\n/' -e 's/-----END PRIVATE KEY-----/\n&/' -e 's/\S\{64\}/&\n/g' $RUNNER_TEMP/private_key_raw > ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+          else
+            cp $RUNNER_TEMP/private_key_raw ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+          fi
+          
+          # Verify key file creation
+          ls -lh ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
 
           # Find the built IPA
-          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
-          echo "📱 Uploading IPA: $IPA_PATH"
+          # flutter build ipa by default outputs to build/ios/ipa
+          # We search broadly just in case
+          IPA_PATH=$(find build/ios -name "*.ipa" -type f | head -1)
+          
+          if [ -z "$IPA_PATH" ]; then
+            echo "❌ Error: IPA file not found in build/ios!"
+            echo "Listing build directory for debugging:"
+            find build/ios -maxdepth 3
+            exit 1
+          fi
+          
+          echo "📱 Found IPA at: $IPA_PATH"
 
           # Upload using xcrun notarytool / altool
           xcrun altool --upload-app \
             --type ios \
             --file "$IPA_PATH" \
-            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+            --apiKey "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
 
           echo "✅ Upload complete! Check TestFlight in App Store Connect."
 
