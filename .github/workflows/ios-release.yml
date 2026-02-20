@@ -103,6 +103,16 @@ jobs:
           echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
           echo "✅ Profile installed: $PROFILE_UUID"
 
+          # ──────────────────────────────────────
+          # 5.2. Prepare ExportOptions.plist
+          # ──────────────────────────────────────
+          # Replace placeholder profile name with UUID and update method
+          sed -i '' "s/BentAlSabeet AppStore/$PROFILE_UUID/g" ios/ExportOptions.plist
+          sed -i '' "s/<string>app-store<\/string>/<string>app-store-connect<\/string>/g" ios/ExportOptions.plist
+          
+          echo "✅ Updated ExportOptions.plist with Profile UUID: $PROFILE_UUID"
+          cat ios/ExportOptions.plist
+
       # ──────────────────────────────────────
       # 5.5. Configure Xcode for Manual Signing
       # ──────────────────────────────────────
