@@ -182,21 +182,29 @@ jobs:
         run: |
           # Write the API key to the expected location
           mkdir -p ~/.private_keys
-          
-          # Handle potentially malformed secret (restore newlines if user pasted as one line)
-          # We use a temp file to process the key
-          echo "${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}" > $RUNNER_TEMP/private_key_raw
-          
-          # If the key doesn't have multiple lines (checked by wc -l), we assume it needs formatting
-          if [ $(wc -l < $RUNNER_TEMP/private_key_raw) -lt 2 ]; then
-            echo "⚠️ Correcting one-line private key format..."
-            sed -e 's/-----BEGIN PRIVATE KEY-----/&\n/' -e 's/-----END PRIVATE KEY-----/\n&/' -e 's/\S\{64\}/&\n/g' $RUNNER_TEMP/private_key_raw > ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
-          else
-            cp $RUNNER_TEMP/private_key_raw ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+          AUTH_KEY_PATH=~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+          echo "${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}" > $AUTH_KEY_PATH
+
+          # Check if key is valid (openssl will complain if format is wrong)
+          # If invalid, try to fix common copy-paste issues (missing newlines)
+          if ! openssl pkey -in $AUTH_KEY_PATH -noout 2>/dev/null; then
+             echo "⚠️ Key file seems invalid (maybe missing newlines?). Attempting to fix..."
+             # Remove header/footer, remove whitespace, split into 64 char lines, add header/footer back
+             KEY_CONTENT=$(cat $AUTH_KEY_PATH | sed 's/-----BEGIN PRIVATE KEY-----//g' | sed 's/-----END PRIVATE KEY-----//g' | tr -d '[:space:]')
+             echo "-----BEGIN PRIVATE KEY-----" > $AUTH_KEY_PATH
+             echo "$KEY_CONTENT" | fold -w 64 >> $AUTH_KEY_PATH
+             echo "-----END PRIVATE KEY-----" >> $AUTH_KEY_PATH
           fi
           
-          # Verify key file creation
-          ls -lh ~/.private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
+          # Verify key validaty again
+          if openssl pkey -in $AUTH_KEY_PATH -noout; then
+             echo "✅ AuthKey is valid."
+          else
+             echo "❌ AuthKey is still invalid after fix attempt. Please check the secret in GitHub."
+             echo "First line of key file:"
+             head -n 1 $AUTH_KEY_PATH
+             exit 1
+          fi
 
           # Find the built IPA
           # flutter build ipa by default outputs to build/ios/ipa
