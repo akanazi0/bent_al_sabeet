@@ -12,7 +12,7 @@ env:
 jobs:
   build-and-deploy-ios:
     name: Build & Deploy to TestFlight
-    runs-on: macos-latest
+    runs-on: macos-15 # Uses standard Apple Silicon runner with newer Xcode
     timeout-minutes: 60
 
     steps:
